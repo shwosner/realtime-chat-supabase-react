@@ -1,13 +1,34 @@
-import { Alert, Box, Spinner } from "@chakra-ui/react";
+import { Alert, Box, Button, Spinner } from "@chakra-ui/react";
+import { useSupabase } from "../useSupabase";
 import AlwaysScrollToBottom from "./AlwaysScrollToBottom";
 import Message from "./Message";
 
-export default function Messages({ username, messages, loadingInitial }) {
+export default function Messages({
+  username,
+  messages,
+  loadingInitial,
+  error,
+}) {
+  const { getMessagesAndSubscribe } = useSupabase();
   if (loadingInitial)
     return (
       <Box textAlign="center">
         <Spinner />
       </Box>
+    );
+  if (error)
+    return (
+      <Alert status="error" mt="20px">
+        {error}
+        <Button
+          ml="5px"
+          onClick={getMessagesAndSubscribe}
+          colorScheme="red"
+          variant="link"
+        >
+          try to reconnect
+        </Button>
+      </Alert>
     );
   return (
     <>
@@ -26,19 +47,6 @@ export default function Messages({ username, messages, loadingInitial }) {
           No messages 😞
         </Box>
       )}
-      {/* {hasStreamError && (
-        <Alert status="error" mt="20px">
-          Disconnected from server
-          <Button
-            ml="5px"
-            // onClick={connectToStream}
-            colorScheme="red"
-            variant="link"
-          >
-            try to reconnect
-          </Button>
-        </Alert>
-      )} */}
     </>
   );
   // return (

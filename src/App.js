@@ -1,21 +1,14 @@
 import React, { useEffect, useState } from "react";
-import {
-  ChakraProvider,
-  Box,
-  Grid,
-  theme,
-  Container,
-  Image,
-  GridItem,
-} from "@chakra-ui/react";
+import { ChakraProvider, Box, Grid, theme, Container } from "@chakra-ui/react";
 // import { ColorModeSwitcher } from "./ColorModeSwitcher";
-import MessageForm from "../components/MessageForm";
-import Messages from "../components/Messages";
+import MessageForm from "./components/MessageForm";
+import Messages from "./components/Messages";
 import "./App.css";
-import NameForm from "../components/NameForm";
 import { useSupabase } from "./useSupabase";
+import Header from "./components/Header";
+import Footer from "./components/Footer";
 function App() {
-  const { messages, loadingInitial } = useSupabase();
+  const { messages, loadingInitial, error } = useSupabase();
 
   const [username, setUsername] = useState("");
   useEffect(() => {
@@ -27,34 +20,34 @@ function App() {
   return (
     <ChakraProvider theme={theme}>
       {/* <ColorModeSwitcher justifySelf="flex-end" /> */}
-      <Grid height="100vh" templateRows="min-content auto">
-        <Grid templateColumns="1fr 1fr" justifyItems="center">
-          <GridItem justifySelf="start" m="2">
-            <Image src="/rchat_logo.png" height="60px" />
-          </GridItem>
-          <GridItem justifySelf="end" alignSelf="center" mr="5">
-            <NameForm username={username} setUsername={setUsername} />
-          </GridItem>
-        </Grid>
-        <Box bg="gray.100">
+      <Grid height="100vh" templateRows="auto auto 30px">
+        <Header username={username} setUsername={setUsername} />
+        <Box bg="gray.100" height="100%">
           <Container
             maxW="600px"
             mt="5"
+            pb="20px"
             display="grid"
             gridTemplateRows="1fr 60px"
-            height="96%"
-            pb="12px"
           >
-            <Box bg="white" p="5" overflow="auto" borderRadius="10px">
+            <Box
+              bg="white"
+              p="5"
+              overflow="auto"
+              borderRadius="10px"
+              height="70vh"
+            >
               <Messages
                 username={username}
                 messages={messages}
                 loadingInitial={loadingInitial}
+                error={error}
               />
             </Box>
             <MessageForm username={username} />
           </Container>
         </Box>
+        <Footer />
       </Grid>
     </ChakraProvider>
   );

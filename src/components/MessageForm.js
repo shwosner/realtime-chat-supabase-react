@@ -1,36 +1,36 @@
 import React, { useState } from "react";
 import { Input, Stack, IconButton, useToast } from "@chakra-ui/react";
 import { BiSend } from "react-icons/bi";
-import { useSupabase } from "../src/useSupabase";
-// import { sendMessage } from "./useSupabase";
+import { useSupabase } from "../useSupabase";
 
 export default function MessageForm({ username }) {
   const { sendMessage } = useSupabase();
   const [message, setMessage] = useState("");
   const toast = useToast();
   const [isSending, setIsSending] = useState(false);
-  // useEffect(() => {
-  //   console.log("message :>> ", message);
-  // }, [message]);
+
   const handleSubmit = (e) => {
     e.preventDefault();
     setIsSending(true);
     if (!message) return;
     sendMessage({ text: message, username })
       .then(({ data, error }) => {
-        console.log("Sucsessfully sent!");
         // console.log({ data, error });
+        if (error) {
+          toast({
+            title: "Error sending",
+            description: error.message,
+            status: "error",
+            duration: 9000,
+            isClosable: true,
+          });
+          return;
+        }
+        console.log("Sucsessfully sent!");
         setMessage("");
       })
       .catch((error) => {
         console.log("error sending message:", error);
-        toast({
-          title: "Error sending",
-          description: error.message,
-          status: "error",
-          duration: 9000,
-          isClosable: true,
-        });
       })
       .finally(() => setIsSending(false));
   };
