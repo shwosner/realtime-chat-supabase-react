@@ -8,7 +8,7 @@ export default function Footer() {
       alignItems="center"
       py="4px"
       px="15px"
-      height="30px"
+      height="40px"
     >
       <GridItem justifySelf="start">
         Built by{" "}

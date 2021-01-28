@@ -20,7 +20,7 @@ function App() {
   return (
     <ChakraProvider theme={theme}>
       {/* <ColorModeSwitcher justifySelf="flex-end" /> */}
-      <Grid height="100vh" templateRows="auto auto 30px">
+      <Grid height="100vh" templateRows="min-content 1fr min-content">
         <Header username={username} setUsername={setUsername} />
         <Box bg="gray.100" height="100%">
           <Container
@@ -35,7 +35,7 @@ function App() {
               p="5"
               overflow="auto"
               borderRadius="10px"
-              height="70vh"
+              height="65vh"
             >
               <Messages
                 username={username}

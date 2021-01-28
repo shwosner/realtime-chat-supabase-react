@@ -3,7 +3,7 @@ import NameForm from "./NameForm";
 
 export default function Header({ username, setUsername }) {
   return (
-    <Grid templateColumns="1fr 1fr" justifyItems="center" height="53px">
+    <Grid templateColumns="1fr 1fr" justifyItems="center" height="73px">
       <GridItem justifySelf="start" m="2">
         <Image src="/rchat_logo.png" height="60px" />
       </GridItem>
