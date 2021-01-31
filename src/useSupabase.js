@@ -62,5 +62,5 @@ export const useSupabase = () => {
     getMessagesAndSubscribe,
   };
 };
-
-// export default supabase;
+export const auth = supabase.auth;
+export default supabase;

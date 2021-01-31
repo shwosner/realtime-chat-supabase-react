@@ -1,17 +1,10 @@
 import { Box, Container } from "@chakra-ui/react";
-import { useEffect } from "react";
-import { useHistory } from "react-router-dom";
 import { useSupabase } from "../useSupabase";
 import MessageForm from "./MessageForm";
 import Messages from "./Messages";
 
-export default function Chat({ username, isLoggedIn }) {
+export default function Chat({ username }) {
   const { messages, loadingInitial, error } = useSupabase();
-  const history = useHistory();
-
-  useEffect(() => {
-    !isLoggedIn && history.push("/login");
-  }, [isLoggedIn]);
 
   return (
     <Container
