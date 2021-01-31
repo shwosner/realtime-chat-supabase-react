@@ -1,16 +1,23 @@
 import React, { useEffect, useState } from "react";
-import { ChakraProvider, Box, Grid, theme, Container } from "@chakra-ui/react";
+import { ChakraProvider, Box, Grid, theme } from "@chakra-ui/react";
 // import { ColorModeSwitcher } from "./ColorModeSwitcher";
-import MessageForm from "./components/MessageForm";
-import Messages from "./components/Messages";
 import "./App.css";
-import { useSupabase } from "./useSupabase";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
-function App() {
-  const { messages, loadingInitial, error } = useSupabase();
+import Chat from "./components/Chat";
+import {
+  BrowserRouter as Router,
+  Route,
+  Switch,
+  useHistory,
+} from "react-router-dom";
+import SignupEmailForm from "./components/SignupEmailForm";
+import LoginWithEmail from "./components/LoginWithEmailForm";
 
+function App() {
   const [username, setUsername] = useState("");
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
   useEffect(() => {
     const localName = localStorage.getItem("username");
     console.log("localName :>> ", localName);
@@ -19,56 +26,31 @@ function App() {
 
   return (
     <ChakraProvider theme={theme}>
-      {/* <ColorModeSwitcher justifySelf="flex-end" /> */}
-      <Grid height="100vh" templateRows="min-content 1fr min-content">
-        <Header username={username} setUsername={setUsername} />
-        <Box bg="gray.100" height="100%">
-          <Container
-            maxW="600px"
-            mt="5"
-            pb="20px"
-            display="grid"
-            gridTemplateRows="1fr 60px"
-          >
-            <Box
-              bg="white"
-              p="5"
-              overflow="auto"
-              borderRadius="10px"
-              height="65vh"
-            >
-              <Messages
-                username={username}
-                messages={messages}
-                loadingInitial={loadingInitial}
-                error={error}
-              />
-            </Box>
-            <MessageForm username={username} />
-          </Container>
-        </Box>
-        <Footer />
-      </Grid>
+      <Box bg="gray.100" h="100vh">
+        {/* <ColorModeSwitcher justifySelf="flex-end" /> */}
+        <Router>
+          <Switch>
+            <Route exact path="/signup">
+              <SignupEmailForm />
+            </Route>
+            <Route exact path="/login">
+              <LoginWithEmail />
+            </Route>
+            <Route exact path="/">
+              <Grid templateRows="min-content 1fr min-content">
+                <Header username={username} setUsername={setUsername} />
+                <Box height="100%">
+                  <Chat username={username} isLoggedIn={isLoggedIn} />
+                </Box>
+                <Footer />
+              </Grid>
+            </Route>
+            <Route>Not found</Route>
+          </Switch>
+        </Router>
+      </Box>
     </ChakraProvider>
   );
 }
 
 export default App;
-
-{
-  /* <VStack spacing={8}>
-            <Logo h="40vmin" pointerEvents="none" />
-            <Text>
-              Edit <Code fontSize="xl">src/App.js</Code> and save to reload.
-            </Text>
-            <Link
-              color="teal.500"
-              href="https://chakra-ui.com"
-              fontSize="2xl"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Learn Chakra
-            </Link>
-          </VStack> */
-}

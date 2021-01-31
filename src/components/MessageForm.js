@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Input, Stack, IconButton, useToast } from "@chakra-ui/react";
+import { Input, Stack, IconButton, useToast, Box } from "@chakra-ui/react";
 import { BiSend } from "react-icons/bi";
 import { useSupabase } from "../useSupabase";
 
@@ -36,28 +36,34 @@ export default function MessageForm({ username }) {
   };
 
   return (
-    <form onSubmit={handleSubmit} autoComplete="off">
-      <Stack direction="row" bg="gray.100" mt="5">
-        <Input
-          name="message"
-          placeholder="Enter a message"
-          onChange={(e) => setMessage(e.target.value)}
-          value={message}
-          bg="white"
-          border="none"
-          autoFocus
-        />
-        <IconButton
-          // variant="outline"
-          colorScheme="teal"
-          aria-label="Send"
-          fontSize="20px"
-          icon={<BiSend />}
-          type="submit"
-          disabled={!message}
-          isLoading={isSending}
-        />
-      </Stack>
-    </form>
+    <Box mt="5">
+      <form onSubmit={handleSubmit} autoComplete="off">
+        <Stack direction="row" bg="gray.100">
+          <Input
+            name="message"
+            placeholder="Enter a message"
+            onChange={(e) => setMessage(e.target.value)}
+            value={message}
+            bg="white"
+            border="none"
+            autoFocus
+          />
+          <IconButton
+            // variant="outline"
+            colorScheme="teal"
+            aria-label="Send"
+            fontSize="20px"
+            icon={<BiSend />}
+            type="submit"
+            disabled={!message}
+            isLoading={isSending}
+          />
+        </Stack>
+      </form>
+      <Box fontSize="12px" mt="1">
+        Warning: do not share any sensitive information, it's a public chat room
+        🙂
+      </Box>
+    </Box>
   );
 }
