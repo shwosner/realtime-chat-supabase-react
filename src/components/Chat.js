@@ -9,12 +9,13 @@ export default function Chat({ username }) {
   return (
     <Container
       maxW="600px"
-      my="5"
+      mt="16px"
+      mb="5"
       pb="20px"
-      display="grid"
-      gridTemplateRows="1fr 60px"
+      // display="grid"
+      // gridTemplateRows="1fr 60px"
     >
-      <Box bg="white" p="5" overflow="auto" borderRadius="10px" height="62vh">
+      <Box bg="white" p="5" overflow="auto" borderRadius="10px" height="66vh">
         <Messages
           username={username}
           messages={messages}

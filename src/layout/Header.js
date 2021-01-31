@@ -10,6 +10,8 @@ export default function Header({ username, setUsername, isGuest }) {
       alignItems="center"
       height="73px"
       bg="white"
+      position="sticky"
+      top="0"
     >
       <GridItem justifySelf="start" m="2">
         <Image src="/rchat_logo.png" height="60px" />

@@ -59,7 +59,11 @@ function App() {
   }
   return (
     <ChakraProvider theme={theme}>
-      <Box bg="gray.100" h="100vh">
+      <Box
+        bg="gray.100"
+        // h="100vh"
+        maxH="100vh"
+      >
         {/* <ColorModeSwitcher justifySelf="flex-end" /> */}
         <Router>
           <Switch>
@@ -79,16 +83,12 @@ function App() {
               <ResetPassword />
             </Route>
             <Route exact path="/">
-              <Grid templateRows="min-content 1fr">
-                <Header
-                  isGuest={isGuest}
-                  username={username}
-                  setUsername={setUsername}
-                />
-                <Box height="100%">
-                  <Chat username={username} />
-                </Box>
-              </Grid>
+              <Header
+                isGuest={isGuest}
+                username={username}
+                setUsername={setUsername}
+              />
+              <Chat username={username} />
               <Footer />
             </Route>
             <Route>Not found</Route>

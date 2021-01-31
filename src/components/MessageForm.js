@@ -60,7 +60,7 @@ export default function MessageForm({ username }) {
           />
         </Stack>
       </form>
-      <Box fontSize="12px" mt="1">
+      <Box fontSize="10px" mt="1">
         Warning: do not share any sensitive information, it's a public chat room
         🙂
       </Box>

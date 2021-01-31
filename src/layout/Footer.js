@@ -10,7 +10,7 @@ export default function Footer() {
       px="15px"
       height="40px"
       bg="white"
-      position="absolute"
+      position="fixed"
       bottom="0"
       width="100%"
     >
