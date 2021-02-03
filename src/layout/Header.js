@@ -1,5 +1,4 @@
 import { Button, Grid, GridItem, Image } from "@chakra-ui/react";
-import { Link } from "react-router-dom";
 import NameForm from "./NameForm";
 import { auth } from "../useSupabase";
 export default function Header({ username, setUsername, isGuest }) {
