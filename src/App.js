@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { ChakraProvider, Box, Grid, theme, Button } from "@chakra-ui/react";
+import { ChakraProvider, Box, theme } from "@chakra-ui/react";
 // import { ColorModeSwitcher } from "./ColorModeSwitcher";
 import "./App.css";
 import Header from "./layout/Header";
@@ -62,7 +62,7 @@ function App() {
       <Box
         bg="gray.100"
         // h="100vh"
-        maxH="100vh"
+        // maxH="100vh"
       >
         {/* <ColorModeSwitcher justifySelf="flex-end" /> */}
         <Router>
@@ -89,7 +89,7 @@ function App() {
                 setUsername={setUsername}
               />
               <Chat username={username} />
-              <Footer />
+              <Footer username={username} />
             </Route>
             <Route>Not found</Route>
           </Switch>

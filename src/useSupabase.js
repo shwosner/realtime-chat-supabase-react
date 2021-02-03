@@ -9,20 +9,20 @@ export const useSupabase = () => {
   const [error, setError] = useState("");
   const [loadingInitial, setLoadingInitial] = useState(true);
 
-  const [newMessage, handleNewMessage] = useState();
-  // const [messageListener, setMessageListener] = useState(null);
+  const [newMessage, handleNewMessage] = useState("");
   let mySubscription = null;
-
-  const sendMessage = async ({ username, text }) => {
-    return await supabase.from("messages").insert([{ text, username }]);
-  };
+  useEffect(() => {
+    if (newMessage) {
+      // console.log("newMessage :>> ", newMessage);
+      setMessages((m) => [...m, newMessage]);
+    }
+  }, [newMessage]);
 
   const getInitialMessages = async () => {
     if (!messages.length) {
       const { data, error } = await supabase.from("messages").select();
       setLoadingInitial(false);
       if (error) {
-        // console.log("error :>> ", error);
         setError(error.message);
         supabase.removeSubscription(mySubscription);
         mySubscription = null;
@@ -31,9 +31,6 @@ export const useSupabase = () => {
       setMessages(data);
     }
   };
-  useEffect(() => {
-    newMessage && setMessages([...messages, newMessage]);
-  }, [newMessage]);
 
   const getMessagesAndSubscribe = async () => {
     setError("");
@@ -41,13 +38,15 @@ export const useSupabase = () => {
     if (!mySubscription) {
       mySubscription = supabase
         .from("messages")
-        .on("*", (payload) => handleNewMessage(payload.new))
+        .on("*", (payload) => {
+          handleNewMessage(payload.new);
+        })
         .subscribe();
     }
   };
 
   useEffect(() => {
-    console.log("useSupabase() effect ran!");
+    // console.log("useSupabase() effect ran!");
     getMessagesAndSubscribe();
     return () => {
       supabase.removeSubscription();
@@ -56,7 +55,6 @@ export const useSupabase = () => {
   }, []);
   return {
     messages,
-    sendMessage,
     loadingInitial,
     error,
     getMessagesAndSubscribe,
