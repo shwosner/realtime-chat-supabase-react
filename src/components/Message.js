@@ -1,9 +1,7 @@
 import { Box, Grid, GridItem } from "@chakra-ui/react";
 import React from "react";
 import dayjs from "dayjs";
-// import localizedFormat from "dayjs/plugin/localizedFormat";
 import relativeTime from "dayjs/plugin/relativeTime";
-// dayjs.extend(localizedFormat);
 dayjs.extend(relativeTime);
 
 export default function Message({ message, isYou }) {
@@ -56,8 +54,7 @@ export default function Message({ message, isYou }) {
           {message.text}
         </GridItem>
         <GridItem fontSize="sm" justifySelf="end" alignSelf="end">
-          {/* {dayjs(message.timestamp).fromNow()} */}
-          {new Date(message.timestamp).toLocaleTimeString()}
+          {dayjs(message.timestamp).fromNow()}
         </GridItem>
       </Grid>
     </Box>

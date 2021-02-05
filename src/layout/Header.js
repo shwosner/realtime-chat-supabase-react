@@ -27,7 +27,13 @@ export default function Header({ username, setUsername, isGuest }) {
       </GridItem>
       <GridItem>
         {isGuest ? (
-          <div style={{ paddingBottom: 7, cursor: "not-allowed" }}>
+          <div
+            style={{
+              paddingBottom: 7,
+              cursor: "not-allowed",
+              color: "lightgray",
+            }}
+          >
             Login
             {/* <Link style={{ paddingBottom: "5px" }} to="/login">
               Login
