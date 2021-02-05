@@ -20,7 +20,11 @@ export const useSupabase = () => {
 
   const getInitialMessages = async () => {
     if (!messages.length) {
-      const { data, error } = await supabase.from("messages").select();
+      const { data, error } = await supabase
+        .from("messages")
+        .select()
+        .order("id", { ascending: true });
+
       setLoadingInitial(false);
       if (error) {
         setError(error.message);
