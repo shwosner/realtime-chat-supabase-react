@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 import { createClient } from "@supabase/supabase-js";
 
 const AppContext = createContext({});
@@ -11,17 +11,25 @@ const AppContextProvider = ({ children }) => {
   let mySubscription = null;
   const [username, setUsername] = useState("");
   const [messages, setMessages] = useState([]);
+  const [sliceCount, setSliceCount] = useState(10);
+  const [slicedMessages, setSlicedMessages] = useState([]);
   const [error, setError] = useState("");
   const [loadingInitial, setLoadingInitial] = useState(true);
-  const [newMessage, triggerNewMessage] = useState(null);
   const [isGuest, setIsGuest] = useState(false);
   const [routeHash, setRouteHash] = useState("");
 
-  useEffect(() => {
-    console.log(`messages changed:`, messages);
-  }, [messages]);
+  // useEffect(() => {
+  //   console.log(`messages changed:`, messages);
+  // }, [messages]);
+
+  // useEffect(() => {
+  //   if (!messages.length) return;
+  //   setSlicedMessages(messages.reverse().slice(0, sliceCount).reverse());
+  // }, [ sliceCount]);
 
   useEffect(() => {
+    getMessagesAndSubscribe();
+
     const user = supabase.auth.user();
     // console.log("user :>> ", user);
     if (user) {
@@ -41,26 +49,32 @@ const AppContextProvider = ({ children }) => {
       console.log("hash", hash);
       setRouteHash(hash);
     }
+
+    return () => {
+      supabase.removeSubscription();
+      console.log("Remove supabase subscription by useEffect unmount");
+    };
   }, []);
 
-  const handleSaveNewMessage = (newMessage) => {
+  const handleSaveNewMessage = async (newMessage) => {
     console.log({ newMessage });
-    setMessages((prevMessages) => {
-      console.log(`prevMessages`, prevMessages);
-      // return [prevMessages, newMessage]});
-      return prevMessages;
-    });
+    // setMessages((prevMessages) => {
+    //   console.log(`prevMessages`, prevMessages);
+    //   // return [prevMessages, newMessage]});
+    //   return prevMessages;
+    // });
+    const { error } = await supabase.from("messages").insert([newMessage]);
+    if (error) console.log(`error`, error);
   };
-  useEffect(() => {
-    console.log(`newMessage trigger`, newMessage);
-    // if (!newMessage) return;
-    // console.log("newMessage :>> ", newMessage);
-    // console.log({ username: newMessage.username, currentUser });
-    // if (currentUser && newMessage.username === currentUser) return;
-    // setMessages((m) => [...m, newMessage]);
-  }, [newMessage]);
 
-  //=========
+  // useEffect(() => {
+  //   console.log(`newMessage trigger`, newMessage);
+  // if (!newMessage) return;
+  // console.log("newMessage :>> ", newMessage);
+  // console.log({ username: newMessage.username, currentUser });
+  // if (currentUser && newMessage.username === currentUser) return;
+  // setMessages((m) => [...m, newMessage]);
+  // }, [newMessage]);
 
   const getInitialMessages = async () => {
     if (!messages.length) {
@@ -77,6 +91,7 @@ const AppContextProvider = ({ children }) => {
         mySubscription = null;
         return;
       }
+      setSlicedMessages(data.reverse().slice(0, sliceCount).reverse());
       setMessages(data);
     }
   };
@@ -90,19 +105,20 @@ const AppContextProvider = ({ children }) => {
         .on("*", (payload) => {
           console.log(`payload.new`, payload.new);
           // triggerNewMessage(payload.new);
-          // setMessages((m) => [...m, payload.new]);
+          setSlicedMessages((prevSliced) => [...prevSliced, payload.new]);
+          setMessages((prevMessages) => [...prevMessages, payload.new]);
         })
         .subscribe();
     }
   };
 
-  useEffect(() => {
-    getMessagesAndSubscribe();
-    return () => {
-      supabase.removeSubscription();
-      console.log("Remove supabase subscription by useEffect unmount");
-    };
-  }, []);
+  // useEffect(() => {
+  //   setSlicedMessages(messages.reverse().slice(0, sliceCount).reverse());
+  // }, [messages]);
+  const removeSlice = () => {
+    setSliceCount(messages.length);
+    setSlicedMessages(messages.reverse());
+  };
 
   return (
     <AppContext.Provider
@@ -110,6 +126,7 @@ const AppContextProvider = ({ children }) => {
         supabase,
         auth: supabase.auth,
         messages,
+        slicedMessages,
         handleSaveNewMessage,
         loadingInitial,
         error,
@@ -118,6 +135,7 @@ const AppContextProvider = ({ children }) => {
         setUsername,
         isGuest,
         routeHash,
+        removeSlice,
       }}
     >
       {children}
