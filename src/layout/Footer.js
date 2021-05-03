@@ -1,10 +1,10 @@
 import { Box, Grid, GridItem } from "@chakra-ui/react";
 import { FaGithub } from "react-icons/fa";
 import MessageForm from "../components/MessageForm";
-export default function Footer({ username }) {
+export default function Footer() {
   return (
     <Box position="fixed" bottom="0" width="100%">
-      <MessageForm username={username} />
+      <MessageForm />
 
       <Grid
         gridTemplateColumns="auto 1fr"
@@ -18,7 +18,11 @@ export default function Footer({ username }) {
         <GridItem justifySelf="start">
           {/* Built by{" "} */}
           {/* <a href="http://shimon-wosner.vercel.app" target="_blank"> */}
-          <a href="https://twitter.com/shwosner" target="_blank">
+          <a
+            href="https://twitter.com/shwosner"
+            target="_blank"
+            rel="noreferrer"
+          >
             @shwosner
           </a>
         </GridItem>
@@ -26,6 +30,7 @@ export default function Footer({ username }) {
           <a
             href="https://github.com/shwosner/realtime-chat-supabase-react"
             target="_blank"
+            rel="noreferrer"
           >
             <FaGithub style={{ display: "inline" }} /> Source code
           </a>

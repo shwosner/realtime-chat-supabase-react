@@ -9,9 +9,10 @@ import {
 } from "@chakra-ui/react";
 import { Link, useHistory, useLocation } from "react-router-dom";
 import AuthContainer from "./AuthContainer";
-import supabase from "../useSupabase";
+import { useAppContext } from "../context/appContext";
 
 export default function LoginWithEmail({ user }) {
+  const { auth } = useAppContext();
   const history = useHistory();
   const { hash } = useLocation();
   const [isLoading, setIsLoading] = useState(false);
@@ -23,7 +24,7 @@ export default function LoginWithEmail({ user }) {
     const password = e.target[0].value;
     console.log({ email, password });
     setIsLoading(true);
-    const { user, error } = await supabase.auth.signIn({
+    const { user, error } = await auth.signIn({
       email,
       password,
     });

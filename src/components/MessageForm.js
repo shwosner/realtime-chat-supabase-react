@@ -8,9 +8,10 @@ import {
   Container,
 } from "@chakra-ui/react";
 import { BiSend } from "react-icons/bi";
-import supabase from "../useSupabase";
+import { useAppContext } from "../context/appContext";
 
-export default function MessageForm({ username }) {
+export default function MessageForm() {
+  const { handleSaveNewMessage } = useAppContext();
   const [message, setMessage] = useState("");
   const toast = useToast();
   const [isSending, setIsSending] = useState(false);
@@ -19,28 +20,30 @@ export default function MessageForm({ username }) {
     e.preventDefault();
     setIsSending(true);
     if (!message) return;
-    try {
-      const { data, error } = await supabase
-        .from("messages")
-        .insert([{ text: message, username }]);
+    handleSaveNewMessage({ text: message });
+    setMessage("");
+    setIsSending(false);
+    // try {
+    //   const { error } = await supabase
+    //     .from("messages")
+    //     .insert([{ text: message, username }]);
 
-      if (error) {
-        toast({
-          title: "Error sending",
-          description: error.message,
-          status: "error",
-          duration: 9000,
-          isClosable: true,
-        });
-        return;
-      }
-      console.log("Sucsessfully sent!");
-      setMessage("");
-    } catch (error) {
-      console.log("error sending message:", error);
-    } finally {
-      setIsSending(false);
-    }
+    //   if (error) {
+    //     toast({
+    //       title: "Error sending",
+    //       description: error.message,
+    //       status: "error",
+    //       duration: 9000,
+    //       isClosable: true,
+    //     });
+    //     return;
+    //   }
+    //   console.log("Sucsessfully sent!");
+    // } catch (error) {
+    //   console.log("error sending message:", error);
+    // } finally {
+    //   setIsSending(false);
+    // }
   };
 
   return (

@@ -1,15 +1,16 @@
 import { Alert, Box, Button, Spinner } from "@chakra-ui/react";
-import { useSupabase } from "../useSupabase";
+import { useAppContext } from "../context/appContext";
 import AlwaysScrollToBottom from "./AlwaysScrollToBottom";
 import Message from "./Message";
 
-export default function Messages({
-  username,
-  messages,
-  loadingInitial,
-  error,
-}) {
-  const { getMessagesAndSubscribe } = useSupabase();
+export default function Messages() {
+  const {
+    username,
+    messages,
+    loadingInitial,
+    error,
+    getMessagesAndSubscribe,
+  } = useAppContext();
   if (loadingInitial)
     return (
       <Box textAlign="center">
@@ -49,24 +50,4 @@ export default function Messages({
       )}
     </>
   );
-  // return (
-  //   <Box
-  //     // mt="4"
-  //     bg="white"
-  //     p="5"
-  //     // height="md"
-  //     // height="26rem"
-  //     // height="100%"
-  //     overflow="auto"
-  //     borderRadius="10px"
-  //   >
-  //     {messages.length
-  //       ? messages.map((message, index) => {
-  //           const isYou = message.username === username;
-  //           return <Message key={index} message={message} isYou={isYou} />;
-  //         })
-  //       : "No messages"}
-  //     <AlwaysScrollToBottom />
-  //   </Box>
-  // );
 }

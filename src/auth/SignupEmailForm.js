@@ -10,9 +10,11 @@ import {
 } from "@chakra-ui/react";
 import AuthContainer from "./AuthContainer";
 import { Link, useHistory } from "react-router-dom";
-import supabase from "../useSupabase";
+import { useAppContext } from "../context/appContext";
 
 export default function SignupEmailForm({ user }) {
+  const { auth } = useAppContext();
+
   const history = useHistory();
 
   const [isLoading, setIsLoading] = useState(false);
@@ -35,7 +37,7 @@ export default function SignupEmailForm({ user }) {
     }
     console.log("calling signup");
     setIsLoading(true);
-    const { user, error } = await supabase.auth.signUp({
+    const { user, error } = await auth.signUp({
       email,
       password,
     });

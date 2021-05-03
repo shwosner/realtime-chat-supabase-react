@@ -1,7 +1,8 @@
 import { Button, Grid, GridItem, Image } from "@chakra-ui/react";
+import { useAppContext } from "../context/appContext";
 import NameForm from "./NameForm";
-import { auth } from "../useSupabase";
-export default function Header({ username, setUsername, isGuest }) {
+export default function Header() {
+  const { username, setUsername, isGuest, auth } = useAppContext();
   return (
     <Grid
       templateColumns="max-content 1fr 80px"

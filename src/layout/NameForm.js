@@ -1,8 +1,10 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Input, Stack, IconButton } from "@chakra-ui/react";
 import { BiSave, BiEdit } from "react-icons/bi";
+import { useAppContext } from "../context/appContext";
 
-export default function NameForm({ username, setUsername }) {
+export default function NameForm() {
+  const { username, setUsername } = useAppContext();
   const [newUsername, setNewUsername] = useState(username);
   const [isEditing, setIsEditing] = useState(false);
   const toggleEditing = () => {

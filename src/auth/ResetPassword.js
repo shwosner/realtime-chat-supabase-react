@@ -7,14 +7,16 @@ import {
   Input,
 } from "@chakra-ui/react";
 import { useState } from "react";
-import { auth } from "../useSupabase";
 import AuthContainer from "./AuthContainer";
 import { Link } from "react-router-dom";
+import { useAppContext } from "../context/appContext";
 
 export default function ResetPassword() {
   const [isLoading, setIsLoading] = useState(false);
   const [resetError, setResetError] = useState("");
   const [requestSuccess, setRequestSuccess] = useState("");
+
+  const { auth } = useAppContext();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
