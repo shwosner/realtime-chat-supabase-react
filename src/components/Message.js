@@ -7,8 +7,8 @@ export default function Message({ message, isYou }) {
   return (
     <Box display="grid" justifyItems={isYou ? "end" : "start"}>
       <Grid
-        templateColumns="1fr 1fr"
-        templateRows="30px 1fr"
+        templateRows="30px 1fr 25px"
+        templateColumns="1fr"
         w="70%"
         px="3"
         py="2"
@@ -38,7 +38,6 @@ export default function Message({ message, isYou }) {
           fontWeight="500"
           fontSize="md"
           justifySelf="start"
-          colSpan={2}
           color="gray.500"
           mb="2"
         >
@@ -52,7 +51,7 @@ export default function Message({ message, isYou }) {
         >
           {message.text}
         </GridItem>
-        <GridItem fontSize="sm" justifySelf="end" alignSelf="end">
+        <GridItem fontSize="11px" justifySelf="end" alignSelf="end">
           {dayjs(message.timestamp).fromNow()}
         </GridItem>
       </Grid>

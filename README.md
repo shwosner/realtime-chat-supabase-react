@@ -8,6 +8,10 @@
 
 `npm install` to setup dependencies
 
+## Supabase variables
+
+Create a `.env` file for the Supapase URL and ANON KEY (see env.example)
+
 ## Dev
 
 `npm start` to run server on port 3000
