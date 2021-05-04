@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useRef, useState } from "react";
 import { createClient } from "@supabase/supabase-js";
 
 const AppContext = createContext({});
@@ -17,27 +17,27 @@ const AppContextProvider = ({ children }) => {
   const [loadingInitial, setLoadingInitial] = useState(true);
   const [isGuest, setIsGuest] = useState(false);
   const [routeHash, setRouteHash] = useState("");
+  const [isOnBottom, setIsOnBottom] = useState(false);
+  const [newIncomingMessageTrigger, setNewIncomingMessageTrigger] = useState(
+    null
+  );
 
-  // useEffect(() => {
-  //   console.log(`messages changed:`, messages);
-  // }, [messages]);
-
-  // useEffect(() => {
-  //   if (!messages.length) return;
-  //   setSlicedMessages(messages.reverse().slice(0, sliceCount).reverse());
-  // }, [ sliceCount]);
+  useEffect(() => {
+    if (!messages.length) return;
+    setSlicedMessages(messages.slice(0, sliceCount).reverse());
+  }, [sliceCount]);
 
   useEffect(() => {
     getMessagesAndSubscribe();
 
-    const user = supabase.auth.user();
-    // console.log("user :>> ", user);
+    // const user = supabase.auth.user();
+    const user = localStorage.getItem("username");
     if (user) {
-      const username = user.email.split("@")[0];
-      setUsername(username);
+      // const username = user.email.split("@")[0];
+      setUsername(user);
     } else {
       setIsGuest(true);
-      setUsername(`Guest${Date.now().toString().substr(-4)}`);
+      setUsername(`@rtc${Date.now().toString().substr(-4)}`);
     }
 
     supabase.auth.onAuthStateChange((event, session) => {
@@ -56,32 +56,24 @@ const AppContextProvider = ({ children }) => {
     };
   }, []);
 
-  const handleSaveNewMessage = async (newMessage) => {
-    console.log({ newMessage });
-    // setMessages((prevMessages) => {
-    //   console.log(`prevMessages`, prevMessages);
-    //   // return [prevMessages, newMessage]});
-    //   return prevMessages;
-    // });
-    const { error } = await supabase.from("messages").insert([newMessage]);
-    if (error) console.log(`error`, error);
-  };
+  useEffect(() => {
+    if (newIncomingMessageTrigger?.username === username) scrollToBottom();
+  }, [newIncomingMessageTrigger]);
 
-  // useEffect(() => {
-  //   console.log(`newMessage trigger`, newMessage);
-  // if (!newMessage) return;
-  // console.log("newMessage :>> ", newMessage);
-  // console.log({ username: newMessage.username, currentUser });
-  // if (currentUser && newMessage.username === currentUser) return;
-  // setMessages((m) => [...m, newMessage]);
-  // }, [newMessage]);
+  const handleNewMessage = (payload) => {
+    //* Sliced messages are already reversed
+    setSlicedMessages((prevSliced) => [...prevSliced, payload.new]);
+    setMessages((prevMessages) => [payload.new, ...prevMessages]);
+    //* needed to trigger react state because I need access to the username state
+    setNewIncomingMessageTrigger(payload.new);
+  };
 
   const getInitialMessages = async () => {
     if (!messages.length) {
       const { data, error } = await supabase
         .from("messages")
         .select()
-        .order("id", { ascending: true });
+        .order("id", { ascending: false });
 
       console.log(`data`, data);
       setLoadingInitial(false);
@@ -91,8 +83,9 @@ const AppContextProvider = ({ children }) => {
         mySubscription = null;
         return;
       }
-      setSlicedMessages(data.reverse().slice(0, sliceCount).reverse());
+      setSlicedMessages(data.slice(0, sliceCount).reverse());
       setMessages(data);
+      scrollToBottom();
     }
   };
 
@@ -103,21 +96,28 @@ const AppContextProvider = ({ children }) => {
       mySubscription = supabase
         .from("messages")
         .on("*", (payload) => {
-          console.log(`payload.new`, payload.new);
-          // triggerNewMessage(payload.new);
-          setSlicedMessages((prevSliced) => [...prevSliced, payload.new]);
-          setMessages((prevMessages) => [...prevMessages, payload.new]);
+          handleNewMessage(payload);
         })
         .subscribe();
     }
   };
 
-  // useEffect(() => {
-  //   setSlicedMessages(messages.reverse().slice(0, sliceCount).reverse());
-  // }, [messages]);
-  const removeSlice = () => {
-    setSliceCount(messages.length);
-    setSlicedMessages(messages.reverse());
+  const scrollRef = useRef();
+
+  const onScroll = ({ target }) => {
+    if (target.scrollHeight - target.scrollTop === target.clientHeight) {
+      setIsOnBottom(true);
+    } else {
+      setIsOnBottom(false);
+    }
+    //* Load more messages when reaching top
+    if (scrollRef.current.scrollTop < 100) setSliceCount(sliceCount + 10);
+    //* This is a fix if user quickly scrolls to top
+    if (scrollRef.current.scrollTop === 0) scrollRef.current.scrollTop = 10;
+  };
+
+  const scrollToBottom = () => {
+    scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
   };
 
   return (
@@ -127,7 +127,6 @@ const AppContextProvider = ({ children }) => {
         auth: supabase.auth,
         messages,
         slicedMessages,
-        handleSaveNewMessage,
         loadingInitial,
         error,
         getMessagesAndSubscribe,
@@ -135,7 +134,10 @@ const AppContextProvider = ({ children }) => {
         setUsername,
         isGuest,
         routeHash,
-        removeSlice,
+        scrollRef,
+        onScroll,
+        scrollToBottom,
+        isOnBottom,
       }}
     >
       {children}

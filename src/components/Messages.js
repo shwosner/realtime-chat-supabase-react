@@ -1,7 +1,5 @@
 import { Alert, Box, Button, Spinner } from "@chakra-ui/react";
-import { useEffect } from "react";
 import { useAppContext } from "../context/appContext";
-import AlwaysScrollToBottom from "./AlwaysScrollToBottom";
 import Message from "./Message";
 
 export default function Messages() {
@@ -12,10 +10,6 @@ export default function Messages() {
     getMessagesAndSubscribe,
     slicedMessages,
   } = useAppContext();
-
-  useEffect(() => {
-    console.log(`slicedMessages changed:`, slicedMessages);
-  }, [slicedMessages]);
 
   if (loadingInitial)
     return (
@@ -47,11 +41,6 @@ export default function Messages() {
 
   return slicedMessages.map((message) => {
     const isYou = message.username === username;
-    return (
-      <div key={message.id}>
-        <Message message={message} isYou={isYou} />
-        <AlwaysScrollToBottom />
-      </div>
-    );
+    return <Message key={message.id} message={message} isYou={isYou} />;
   });
 }
