@@ -21,6 +21,30 @@ const AppContextProvider = ({ children }) => {
   const [newIncomingMessageTrigger, setNewIncomingMessageTrigger] = useState(
     null
   );
+  const [location, setLocation] = useState(null);
+
+  const getLocation = async () => {
+    try {
+      const res = await fetch("https://api.db-ip.com/v2/free/self");
+      const resJSON = await res.json();
+      // console.log(`resJSON`, resJSON);
+      setLocation(resJSON);
+    } catch (error) {
+      console.log(`error getting location`, error);
+    }
+  };
+  // useEffect(() => {
+  //   if (navigator.geolocation) {
+  //     navigator.geolocation.getCurrentPosition(function (position) {
+  //       const latitude = position.coords.latitude;
+  //       const longitude = position.coords.longitude;
+  //       console.log({ latitude, longitude });
+  //     });
+  //   }
+  // }, [navigator.geolocation]);
+  useEffect(() => {
+    getLocation();
+  }, []);
 
   useEffect(() => {
     if (!messages.length) return;
@@ -74,8 +98,7 @@ const AppContextProvider = ({ children }) => {
         .from("messages")
         .select()
         .order("id", { ascending: false });
-
-      console.log(`data`, data);
+      // console.log(`data`, data);
       setLoadingInitial(false);
       if (error) {
         setError(error.message);
@@ -117,6 +140,7 @@ const AppContextProvider = ({ children }) => {
   };
 
   const scrollToBottom = () => {
+    if (!scrollRef.current) return;
     scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
   };
 
@@ -138,6 +162,7 @@ const AppContextProvider = ({ children }) => {
         onScroll,
         scrollToBottom,
         isOnBottom,
+        country: location?.countryCode,
       }}
     >
       {children}

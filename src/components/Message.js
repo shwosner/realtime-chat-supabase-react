@@ -1,6 +1,7 @@
 import { Box, Grid, GridItem } from "@chakra-ui/react";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
+
 dayjs.extend(relativeTime);
 
 export default function Message({ message, isYou }) {
@@ -41,13 +42,24 @@ export default function Message({ message, isYou }) {
           color="gray.500"
           mb="2"
         >
-          {isYou ? "You" : message.username}
+          {isYou ? "You" : message.username}{" "}
+          {message.country && (
+            <Box display="inline-block" fontSize="12px">
+              from{" "}
+              <img
+                style={{ display: "inline-block" }}
+                src={`https://www.countryflags.io/${message.country}/flat/16.png`}
+                alt={message.country}
+              />
+            </Box>
+          )}
         </GridItem>
         <GridItem
           justifySelf="start"
           textAlign="left"
           wordBreak="break-word"
           fontSize="md"
+          fontFamily="Montserrat, sans-serif"
         >
           {message.text}
         </GridItem>
