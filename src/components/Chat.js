@@ -6,7 +6,13 @@ import { BsChevronDoubleDown } from "react-icons/bs";
 
 export default function Chat() {
   const [height, setHeight] = useState(window.innerHeight - 205);
-  const { scrollRef, onScroll, scrollToBottom, isOnBottom } = useAppContext();
+  const {
+    scrollRef,
+    onScroll,
+    scrollToBottom,
+    isOnBottom,
+    unviewedMessageCount,
+  } = useAppContext();
   useEffect(() => {
     window.addEventListener("resize", () => {
       setHeight(window.innerHeight - 205);
@@ -27,7 +33,7 @@ export default function Chat() {
       >
         <Messages />
         {!isOnBottom && (
-          <BsChevronDoubleDown
+          <div
             style={{
               position: "-webkit-sticky",
               position: "sticky",
@@ -37,11 +43,25 @@ export default function Chat() {
               cursor: "pointer",
             }}
             onClick={scrollToBottom}
-          />
+          >
+            {unviewedMessageCount > 0 ? (
+              <Badge
+                ml="1"
+                fontSize="0.8em"
+                colorScheme="green"
+                display="flex"
+                borderRadius="7px"
+                padding="3px 5px"
+                alignItems="center"
+              >
+                {unviewedMessageCount}
+                <BsChevronDoubleDown style={{ marginLeft: "3px" }} />
+              </Badge>
+            ) : (
+              <BsChevronDoubleDown style={{ marginLeft: "3px" }} />
+            )}
+          </div>
         )}
-        {/* <Badge ml="1" fontSize="0.8em" colorScheme="green">
-          New
-        </Badge> */}
       </Box>
     </Container>
   );

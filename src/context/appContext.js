@@ -15,36 +15,26 @@ const AppContextProvider = ({ children }) => {
   const [slicedMessages, setSlicedMessages] = useState([]);
   const [error, setError] = useState("");
   const [loadingInitial, setLoadingInitial] = useState(true);
-  const [isGuest, setIsGuest] = useState(false);
+  const [isGuest, setIsGuest] = useState(true);
   const [routeHash, setRouteHash] = useState("");
   const [isOnBottom, setIsOnBottom] = useState(false);
   const [newIncomingMessageTrigger, setNewIncomingMessageTrigger] = useState(
     null
   );
-  const [location, setLocation] = useState(null);
+  const [unviewedMessageCount, setUnviewedMessageCount] = useState(0);
+  const [countryCode, setCountryCode] = useState("");
 
   const getLocation = async () => {
     try {
       const res = await fetch("https://api.db-ip.com/v2/free/self");
       const resJSON = await res.json();
       // console.log(`resJSON`, resJSON);
-      setLocation(resJSON);
+      setCountryCode(resJSON.countryCode);
+      localStorage.setItem("countryCode", resJSON.countryCode);
     } catch (error) {
       console.log(`error getting location`, error);
     }
   };
-  // useEffect(() => {
-  //   if (navigator.geolocation) {
-  //     navigator.geolocation.getCurrentPosition(function (position) {
-  //       const latitude = position.coords.latitude;
-  //       const longitude = position.coords.longitude;
-  //       console.log({ latitude, longitude });
-  //     });
-  //   }
-  // }, [navigator.geolocation]);
-  useEffect(() => {
-    getLocation();
-  }, []);
 
   useEffect(() => {
     if (!messages.length) return;
@@ -55,14 +45,16 @@ const AppContextProvider = ({ children }) => {
     getMessagesAndSubscribe();
 
     // const user = supabase.auth.user();
-    const user = localStorage.getItem("username");
-    if (user) {
-      // const username = user.email.split("@")[0];
-      setUsername(user);
-    } else {
-      setIsGuest(true);
-      setUsername(`@rtc${Date.now().toString().substr(-4)}`);
-    }
+    // setIsGuest(true);
+    // const username = user.email.split("@")[0];
+    const storedUser = localStorage.getItem("username");
+    const storedCountryCode = localStorage.getItem("countryCode");
+
+    if (storedUser) setUsername(storedUser);
+    else setUsername(`@rtc${Date.now().toString().substr(-4)}`);
+
+    if (storedCountryCode) setCountryCode(storedCountryCode);
+    else getLocation();
 
     supabase.auth.onAuthStateChange((event, session) => {
       console.log("onAuthStateChange", { event, session });
@@ -82,6 +74,7 @@ const AppContextProvider = ({ children }) => {
 
   useEffect(() => {
     if (newIncomingMessageTrigger?.username === username) scrollToBottom();
+    else setUnviewedMessageCount((prevCount) => prevCount + 1);
   }, [newIncomingMessageTrigger]);
 
   const handleNewMessage = (payload) => {
@@ -129,6 +122,7 @@ const AppContextProvider = ({ children }) => {
 
   const onScroll = ({ target }) => {
     if (target.scrollHeight - target.scrollTop === target.clientHeight) {
+      setUnviewedMessageCount(0);
       setIsOnBottom(true);
     } else {
       setIsOnBottom(false);
@@ -162,7 +156,8 @@ const AppContextProvider = ({ children }) => {
         onScroll,
         scrollToBottom,
         isOnBottom,
-        country: location?.countryCode,
+        country: countryCode,
+        unviewedMessageCount,
       }}
     >
       {children}
