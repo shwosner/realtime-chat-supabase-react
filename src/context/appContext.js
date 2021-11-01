@@ -11,8 +11,6 @@ const AppContextProvider = ({ children }) => {
   let mySubscription = null;
   const [username, setUsername] = useState("");
   const [messages, setMessages] = useState([]);
-  const [sliceCount, setSliceCount] = useState(10);
-  const [slicedMessages, setSlicedMessages] = useState([]);
   const [error, setError] = useState("");
   const [loadingInitial, setLoadingInitial] = useState(true);
   const [isGuest, setIsGuest] = useState(true);
@@ -38,11 +36,6 @@ const AppContextProvider = ({ children }) => {
       );
     }
   };
-
-  useEffect(() => {
-    if (!messages.length) return;
-    setSlicedMessages(messages.slice(0, sliceCount).reverse());
-  }, [sliceCount]);
 
   useEffect(() => {
     getMessagesAndSubscribe();
@@ -82,8 +75,7 @@ const AppContextProvider = ({ children }) => {
   }, [newIncomingMessageTrigger]);
 
   const handleNewMessage = (payload) => {
-    //* Sliced messages are already reversed
-    setSlicedMessages((prevSliced) => [...prevSliced, payload.new]);
+    console.log("handle new mwssage");
     setMessages((prevMessages) => [payload.new, ...prevMessages]);
     //* needed to trigger react state because I need access to the username state
     setNewIncomingMessageTrigger(payload.new);
@@ -94,7 +86,7 @@ const AppContextProvider = ({ children }) => {
       const { data, error } = await supabase
         .from("messages")
         .select()
-        .limit(100)
+        .range(0, 49)
         .order("id", { ascending: false });
       // console.log(`data`, data);
       setLoadingInitial(false);
@@ -104,7 +96,6 @@ const AppContextProvider = ({ children }) => {
         mySubscription = null;
         return;
       }
-      setSlicedMessages(data.slice(0, sliceCount).reverse());
       setMessages(data);
       scrollToBottom();
     }
@@ -125,7 +116,7 @@ const AppContextProvider = ({ children }) => {
 
   const scrollRef = useRef();
 
-  const onScroll = ({ target }) => {
+  const onScroll = async ({ target }) => {
     // console.log({
     //   "target.scrollHeight - target.scrollTop":
     //     target.scrollHeight - target.scrollTop,
@@ -138,9 +129,21 @@ const AppContextProvider = ({ children }) => {
       setIsOnBottom(false);
     }
     //* Load more messages when reaching top
-    if (scrollRef.current.scrollTop < 100) setSliceCount(sliceCount + 10);
+    if (scrollRef.current.scrollTop === 1) {
+      console.log("messages.length :>> ", messages.length);
+      const { data, error } = await supabase
+        .from("messages")
+        .select()
+        .range(messages.length, messages.length + 49)
+        .order("id", { ascending: false });
+      if (error) {
+        setError(error.message);
+        return;
+      }
+      setMessages((prevMessages) => [...prevMessages, ...data]);
+    }
     //* This is a fix if user quickly scrolls to top
-    if (scrollRef.current.scrollTop === 0) scrollRef.current.scrollTop = 10;
+    if (scrollRef.current.scrollTop === 0) scrollRef.current.scrollTop = 20;
   };
 
   const scrollToBottom = () => {
@@ -154,7 +157,6 @@ const AppContextProvider = ({ children }) => {
         supabase,
         auth: supabase.auth,
         messages,
-        slicedMessages,
         loadingInitial,
         error,
         getMessagesAndSubscribe,

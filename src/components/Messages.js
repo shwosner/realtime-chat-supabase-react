@@ -3,14 +3,9 @@ import { useAppContext } from "../context/appContext";
 import Message from "./Message";
 
 export default function Messages() {
-  const {
-    username,
-    loadingInitial,
-    error,
-    getMessagesAndSubscribe,
-    slicedMessages,
-  } = useAppContext();
-
+  const { username, loadingInitial, error, getMessagesAndSubscribe, messages } =
+    useAppContext();
+  const reversed = [...messages].reverse();
   if (loadingInitial)
     return (
       <Box textAlign="center">
@@ -32,14 +27,14 @@ export default function Messages() {
       </Alert>
     );
 
-  if (!slicedMessages.length)
+  if (!messages.length)
     return (
       <Box as="h3" textAlign="center">
         No messages 😞
       </Box>
     );
 
-  return slicedMessages.map((message) => {
+  return reversed.map((message) => {
     const isYou = message.username === username;
     return <Message key={message.id} message={message} isYou={isYou} />;
   });

@@ -19,6 +19,7 @@ html {
 ::-webkit-scrollbar-thumb {
   /* background: #888; */
   background: #3faaac;
+  border-radius: 5px;
 }
 
 /* Handle on hover */
