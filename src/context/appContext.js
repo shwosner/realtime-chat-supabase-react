@@ -13,7 +13,7 @@ const AppContextProvider = ({ children }) => {
   const [messages, setMessages] = useState([]);
   const [error, setError] = useState("");
   const [loadingInitial, setLoadingInitial] = useState(true);
-  const [isGuest, setIsGuest] = useState(true);
+  // const [isGuest, setIsGuest] = useState(true);
   const [routeHash, setRouteHash] = useState("");
   const [isOnBottom, setIsOnBottom] = useState(false);
   const [newIncomingMessageTrigger, setNewIncomingMessageTrigger] =
@@ -162,7 +162,7 @@ const AppContextProvider = ({ children }) => {
         getMessagesAndSubscribe,
         username,
         setUsername,
-        isGuest,
+        isGuest: true,
         routeHash,
         scrollRef,
         onScroll,

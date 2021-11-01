@@ -5,9 +5,9 @@ import Header from "./layout/Header";
 import Footer from "./layout/Footer";
 import Chat from "./components/Chat";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
-import SignupEmailForm from "./auth/SignupEmailForm";
-import LoginWithEmail from "./auth/LoginWithEmailForm";
-import ResetPassword from "./auth/ResetPassword";
+// import SignupEmailForm from "./auth/SignupEmailForm";
+// import LoginWithEmail from "./auth/LoginWithEmailForm";
+// import ResetPassword from "./auth/ResetPassword";
 import { AppContextProvider, useAppContext } from "./context/appContext";
 
 function App() {
@@ -38,7 +38,7 @@ function App() {
           {/* <ColorModeSwitcher justifySelf="flex-end" /> */}
           <Router>
             <Switch>
-              <Route
+              {/* <Route
                 exact
                 path="#error_code=404&error_description=User+not+found"
               >
@@ -52,7 +52,7 @@ function App() {
               </Route>
               <Route exact path="/reset-password">
                 <ResetPassword />
-              </Route>
+              </Route> */}
               <Route exact path="/">
                 <Header
                   isGuest={isGuest}

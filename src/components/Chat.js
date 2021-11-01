@@ -34,7 +34,6 @@ export default function Chat() {
         {!isOnBottom && (
           <div
             style={{
-              position: "-webkit-sticky",
               position: "sticky",
               bottom: 8,
               // right: 0,

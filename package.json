@@ -3,17 +3,16 @@
   "version": "0.2.0",
   "private": false,
   "dependencies": {
-    "@chakra-ui/react": "^1.6.0",
-    "@emotion/react": "^11.1.5",
+    "@chakra-ui/react": "^1.6.10",
+    "@emotion/react": "^11.5.0",
     "@emotion/styled": "^11.3.0",
-    "@supabase/supabase-js": "^1.11.9",
-    "axios": "^0.21.1",
-    "dayjs": "^1.10.4",
-    "framer-motion": ">=4.1.11",
+    "@supabase/supabase-js": "^1.25.2",
+    "axios": "^0.24.0",
+    "dayjs": "^1.10.7",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
-    "react-icons": "^4.2.0",
-    "react-router-dom": "^5.2.0"
+    "react-icons": "^4.3.1",
+    "react-router-dom": "^5.3.0"
   },
   "devDependencies": {
     "react-scripts": "4.0.3"
