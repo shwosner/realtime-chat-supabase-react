@@ -16,7 +16,6 @@ export default function Chat() {
   useEffect(() => {
     window.addEventListener("resize", () => {
       setHeight(window.innerHeight - 205);
-      console.log("resize");
     });
   }, []);
 

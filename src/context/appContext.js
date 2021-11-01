@@ -126,7 +126,12 @@ const AppContextProvider = ({ children }) => {
   const scrollRef = useRef();
 
   const onScroll = ({ target }) => {
-    if (target.scrollHeight - target.scrollTop === target.clientHeight) {
+    // console.log({
+    //   "target.scrollHeight - target.scrollTop":
+    //     target.scrollHeight - target.scrollTop,
+    //   clientHeight: target.clientHeight,
+    // });
+    if (target.scrollHeight - target.scrollTop <= target.clientHeight + 1) {
       setUnviewedMessageCount(0);
       setIsOnBottom(true);
     } else {
