@@ -5,6 +5,10 @@ import relativeTime from "dayjs/plugin/relativeTime";
 dayjs.extend(relativeTime);
 
 export default function Message({ message, isYou }) {
+  const countyCode =
+    message.country && message.country !== "undefined"
+      ? message.country.toLowerCase()
+      : "";
   return (
     <Box display="grid" justifyItems={isYou ? "end" : "start"}>
       <Grid
@@ -43,12 +47,12 @@ export default function Message({ message, isYou }) {
           mb="2"
         >
           {isYou ? "You" : message.username}{" "}
-          {message.country && (
-            <Box display="inline-block" fontSize="12px">
-              from{" "}
+          {countyCode && (
+            <Box display="inline-block" fontSize="10px">
+              from {message.country}{" "}
               <img
-                style={{ display: "inline-block" }}
-                src={`https://www.countryflags.io/${message.country}/flat/16.png`}
+                style={{ display: "inline-block", marginTop: "-4px" }}
+                src={`/flags/${countyCode}.png`}
                 alt={message.country}
               />
             </Box>

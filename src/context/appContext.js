@@ -18,21 +18,24 @@ const AppContextProvider = ({ children }) => {
   const [isGuest, setIsGuest] = useState(true);
   const [routeHash, setRouteHash] = useState("");
   const [isOnBottom, setIsOnBottom] = useState(false);
-  const [newIncomingMessageTrigger, setNewIncomingMessageTrigger] = useState(
-    null
-  );
+  const [newIncomingMessageTrigger, setNewIncomingMessageTrigger] =
+    useState(null);
   const [unviewedMessageCount, setUnviewedMessageCount] = useState(0);
   const [countryCode, setCountryCode] = useState("");
 
   const getLocation = async () => {
     try {
       const res = await fetch("https://api.db-ip.com/v2/free/self");
-      const resJSON = await res.json();
-      // console.log(`resJSON`, resJSON);
-      setCountryCode(resJSON.countryCode);
-      localStorage.setItem("countryCode", resJSON.countryCode);
+      const { countryCode, error } = await res.json();
+      if (error) throw new Error(error);
+
+      setCountryCode(countryCode);
+      localStorage.setItem("countryCode", countryCode);
     } catch (error) {
-      console.log(`error getting location`, error);
+      console.error(
+        `error getting location from api.db-ip.com:`,
+        error.message
+      );
     }
   };
 
@@ -53,7 +56,8 @@ const AppContextProvider = ({ children }) => {
     if (storedUser) setUsername(storedUser);
     else setUsername(`@rtc${Date.now().toString().substr(-4)}`);
 
-    if (storedCountryCode) setCountryCode(storedCountryCode);
+    if (storedCountryCode && storedCountryCode !== "undefined")
+      setCountryCode(storedCountryCode);
     else getLocation();
 
     supabase.auth.onAuthStateChange((event, session) => {
@@ -90,6 +94,7 @@ const AppContextProvider = ({ children }) => {
       const { data, error } = await supabase
         .from("messages")
         .select()
+        .limit(100)
         .order("id", { ascending: false });
       // console.log(`data`, data);
       setLoadingInitial(false);

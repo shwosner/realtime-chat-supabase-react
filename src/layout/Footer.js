@@ -11,7 +11,7 @@ export default function Footer() {
         textAlign="center"
         alignItems="center"
         py="4px"
-        px="15px"
+        px="30px"
         height="40px"
         bg="white"
       >

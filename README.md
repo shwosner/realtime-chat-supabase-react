@@ -1,8 +1,10 @@
 # Full-stack real-time chat
 
-- **Data:** [@supabase_io](https://twitter.com/supabase_io) (on top of PostgeSQL) for the real-time messages.
-- **Front-end**: React (CRA)
-- **UI library**: [@chakra_ui](https://twitter.com/chakra_ui)
+- **Data:** PostgeSQL managed by [Supabase](https://supabase.io/) [@supabase_io](https://twitter.com/supabase_io) (awsome real-time API).
+- **Front-end**: React [create-react-app](https://create-react-app.dev/)
+- **UI library**: [chakra-ui](https://chakra-ui.com/) [@chakra_ui](https://twitter.com/chakra_ui)
+- **Hosting**: [Netlify](https://www.netlify.com/)
+- Country flags from [Flagpedia](https://flagpedia.net)
 
 ## Install
 
@@ -23,7 +25,7 @@ The following database table is required:
 | country  | VARCHAR |
 | text     | TEXT    |
 
-SQL query if not using the Supabase interface: 
+SQL query if not using the Supabase interface:
 
 ```sql
 CREATE TABLE messages (
@@ -33,6 +35,7 @@ CREATE TABLE messages (
   text TEXT NOT NULL
 );
 ```
+
 ## Dev
 
 `npm start` to run server on port 3000
