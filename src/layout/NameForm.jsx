@@ -58,7 +58,7 @@ export default function NameForm() {
         )}
         <IconButton
           size="sm"
-          pb="3px"
+          paddingBottom="12px"
           variant="outline"
           colorScheme="teal"
           aria-label="Save"
