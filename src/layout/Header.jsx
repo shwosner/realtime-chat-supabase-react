@@ -16,7 +16,7 @@ export default function Header() {
       borderBottom="20px solid #edf2f7"
     >
       <GridItem justifySelf="start" m="2">
-        <Image src="/public/logo.png" height="30px" ml="2" />
+        <Image src="/logo.png" height="30px" ml="2" />
       </GridItem>
       <GridItem justifySelf="end" alignSelf="end">
         {isGuest && <NameForm username={username} setUsername={setUsername} />}
