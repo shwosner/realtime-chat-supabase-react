@@ -24,8 +24,7 @@ export default function MessageForm() {
     setMessage("");
 
     try {
-      // const { error } = await supabase.from("messages").insert([
-      const { error } = await supabase.from("messages_test").insert([
+      const { error } = await supabase.from("messages").insert([
         {
           text: message,
           username,
