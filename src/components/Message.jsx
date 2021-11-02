@@ -67,7 +67,7 @@ export default function Message({ message, isYou }) {
         >
           {message.text}
         </GridItem>
-        <GridItem fontSize="11px" justifySelf="end" alignSelf="end">
+        <GridItem color="gray" fontSize="10px" justifySelf="end" alignSelf="end">
           {dayjs(message.timestamp).fromNow()}
         </GridItem>
       </Grid>
