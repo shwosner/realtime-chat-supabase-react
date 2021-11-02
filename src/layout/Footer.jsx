@@ -1,5 +1,5 @@
 import { Box, Grid, GridItem } from "@chakra-ui/react";
-import { FaGithub } from "react-icons/fa";
+import { FaGithub, FaTwitter } from "react-icons/fa";
 import MessageForm from "../components/MessageForm";
 export default function Footer() {
   return (
@@ -23,6 +23,7 @@ export default function Footer() {
             target="_blank"
             rel="noreferrer"
           >
+            <FaTwitter style={{ display: "inline" }} />
             @shwosner
           </a>
         </GridItem>

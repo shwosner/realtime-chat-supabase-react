@@ -37,7 +37,7 @@ export default function NameForm() {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form onSubmit={handleSubmit} style={{ marginRight: "20px" }}>
       <Stack direction="row">
         {isEditing ? (
           <Input
@@ -64,7 +64,6 @@ export default function NameForm() {
           aria-label="Save"
           fontSize="15px"
           icon={isEditing ? <BiSave /> : <BiEdit />}
-          // type="submit"
           border="none"
           onClick={(e) => {
             if (isEditing) {

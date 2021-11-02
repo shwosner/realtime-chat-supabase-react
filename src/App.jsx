@@ -5,13 +5,10 @@ import Header from "./layout/Header";
 import Footer from "./layout/Footer";
 import Chat from "./components/Chat";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
-// import SignupEmailForm from "./auth/SignupEmailForm";
-// import LoginWithEmail from "./auth/LoginWithEmailForm";
-// import ResetPassword from "./auth/ResetPassword";
 import { AppContextProvider, useAppContext } from "./context/appContext";
 
 function App() {
-  const { username, setUsername, isGuest, routeHash } = useAppContext();
+  const { username, setUsername, routeHash } = useAppContext();
 
   if (routeHash) {
     if (routeHash.endsWith("&type=recovery")) {
@@ -30,33 +27,12 @@ function App() {
   return (
     <ChakraProvider theme={theme}>
       <AppContextProvider>
-        <Box
-          bg="gray.100"
-        >
+        <Box bg="gray.100">
           {/* <ColorModeSwitcher justifySelf="flex-end" /> */}
           <Router>
             <Switch>
-              {/* <Route
-                exact
-                path="#error_code=404&error_description=User+not+found"
-              >
-                <LoginWithEmail />
-              </Route>
-              <Route exact path="/signup">
-                <SignupEmailForm />
-              </Route>
-              <Route exact path="/login">
-                <LoginWithEmail />
-              </Route>
-              <Route exact path="/reset-password">
-                <ResetPassword />
-              </Route> */}
               <Route exact path="/">
-                <Header
-                  isGuest={isGuest}
-                  username={username}
-                  setUsername={setUsername}
-                />
+                <Header username={username} setUsername={setUsername} />
                 <Chat username={username} />
                 <Footer username={username} />
               </Route>

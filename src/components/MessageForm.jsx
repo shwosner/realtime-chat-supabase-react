@@ -11,7 +11,7 @@ import { BiSend } from "react-icons/bi";
 import { useAppContext } from "../context/appContext";
 
 export default function MessageForm() {
-  const { supabase, username, country } = useAppContext();
+  const { supabase, username, country, auth } = useAppContext();
   const [message, setMessage] = useState("");
   const toast = useToast();
   const [isSending, setIsSending] = useState(false);
@@ -24,11 +24,18 @@ export default function MessageForm() {
     setMessage("");
 
     try {
-      const { error } = await supabase
-        .from("messages")
-        .insert([{ text: message, username, country }]);
+      // const { error } = await supabase.from("messages").insert([
+      const { error } = await supabase.from("messages_test").insert([
+        {
+          text: message,
+          username,
+          country,
+          is_authenticated: auth.user() ? true : false,
+        },
+      ]);
 
       if (error) {
+        console.error(error.message);
         toast({
           title: "Error sending",
           description: error.message,

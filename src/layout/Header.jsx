@@ -1,14 +1,15 @@
 import { Button, Grid, GridItem, Image } from "@chakra-ui/react";
+import { FaGithub } from "react-icons/fa";
+
 import { useAppContext } from "../context/appContext";
 import NameForm from "./NameForm";
 export default function Header() {
-  const { username, setUsername, isGuest, auth } = useAppContext();
+  const { username, setUsername, auth, randomUsername } = useAppContext();
   return (
     <Grid
-      templateColumns="max-content 1fr 80px"
+      templateColumns="max-content 1fr min-content"
       justifyItems="center"
       alignItems="center"
-      // height="93px"
       bg="white"
       position="sticky"
       top="0"
@@ -18,41 +19,47 @@ export default function Header() {
       <GridItem justifySelf="start" m="2">
         <Image src="/logo.png" height="30px" ml="2" />
       </GridItem>
-      <GridItem justifySelf="end" alignSelf="end">
-        {isGuest && <NameForm username={username} setUsername={setUsername} />}
-        {!isGuest && (
-          <>
+      {auth.user() ? (
+        <>
+          <GridItem justifySelf="end" alignSelf="center" mr="4">
             Welcome <strong>{username}</strong>
-          </>
-        )}
-      </GridItem>
-      <GridItem alignSelf="end">
-        {isGuest ? (
-          <div
-            style={{
-              paddingBottom: 7,
-              cursor: "not-allowed",
-              color: "lightgray",
-            }}
-          >
-            Login
-            {/* <Link style={{ paddingBottom: "5px" }} to="/login">
-              Login
-            </Link> */}
-          </div>
-        ) : (
+          </GridItem>
           <Button
-            pb="3px"
+            marginRight="4"
+            size="sm"
             variant="link"
             onClick={() => {
               const { error } = auth.signOut();
-              if (error) console.log("error signOut", error);
+              if (error) return console.error("error signOut", error);
+              const username = randomUsername();
+              setUsername(username);
+              localStorage.setItem("username", username);
             }}
           >
             Log out
           </Button>
-        )}
-      </GridItem>
+        </>
+      ) : (
+        <>
+          <GridItem justifySelf="end" alignSelf="end">
+            <NameForm username={username} setUsername={setUsername} />
+          </GridItem>
+          <Button
+            size="sm"
+            marginRight="2"
+            colorScheme="teal"
+            rightIcon={<FaGithub />}
+            variant="outline"
+            onClick={() =>
+              auth.signIn({
+                provider: "github",
+              })
+            }
+          >
+            Login
+          </Button>
+        </>
+      )}
     </Grid>
   );
 }

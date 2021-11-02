@@ -13,7 +13,6 @@ const AppContextProvider = ({ children }) => {
   const [messages, setMessages] = useState([]);
   const [error, setError] = useState("");
   const [loadingInitial, setLoadingInitial] = useState(true);
-  // const [isGuest, setIsGuest] = useState(true);
   const [routeHash, setRouteHash] = useState("");
   const [isOnBottom, setIsOnBottom] = useState(false);
   const [newIncomingMessageTrigger, setNewIncomingMessageTrigger] =
@@ -37,31 +36,43 @@ const AppContextProvider = ({ children }) => {
     }
   };
 
+  const randomUsername = () => {
+    return `@user${Date.now().toString().substr(-4)}`;
+  };
+  const initializeUser = () => {
+    const user = supabase.auth.user();
+    let username;
+    if (user) {
+      username = user.user_metadata.user_name;
+    } else {
+      username = localStorage.getItem("username") || randomUsername();
+    }
+    setUsername(username);
+    localStorage.setItem("username", username);
+  };
+
   useEffect(() => {
+    initializeUser();
     getMessagesAndSubscribe();
 
-    // const user = supabase.auth.user();
-    // setIsGuest(true);
-    // const username = user.email.split("@")[0];
-    const storedUser = localStorage.getItem("username");
+    // const storedUser = localStorage.getItem("username");
+    // if (storedUser) setUsername(storedUser);
+    // else setUsername(`@user${Date.now().toString().substr(-4)}`);
+
     const storedCountryCode = localStorage.getItem("countryCode");
-
-    if (storedUser) setUsername(storedUser);
-    else setUsername(`@rtc${Date.now().toString().substr(-4)}`);
-
     if (storedCountryCode && storedCountryCode !== "undefined")
       setCountryCode(storedCountryCode);
     else getLocation();
 
     supabase.auth.onAuthStateChange((event, session) => {
       console.log("onAuthStateChange", { event, session });
-      // if(event === "SIGNED_OUT")
+      if (event === "SIGNED_IN") initializeUser();
     });
-    const { hash, pathname } = window.location;
-    if (hash && pathname === "/") {
-      console.log("hash", hash);
-      setRouteHash(hash);
-    }
+    // const { hash, pathname } = window.location;
+    // if (hash && pathname === "/") {
+    //   console.log("hash", hash);
+    //   setRouteHash(hash);
+    // }
 
     return () => {
       supabase.removeSubscription();
@@ -75,7 +86,6 @@ const AppContextProvider = ({ children }) => {
   }, [newIncomingMessageTrigger]);
 
   const handleNewMessage = (payload) => {
-    console.log("handle new mwssage");
     setMessages((prevMessages) => [payload.new, ...prevMessages]);
     //* needed to trigger react state because I need access to the username state
     setNewIncomingMessageTrigger(payload.new);
@@ -115,7 +125,6 @@ const AppContextProvider = ({ children }) => {
   };
 
   const scrollRef = useRef();
-
   const onScroll = async ({ target }) => {
     if (target.scrollHeight - target.scrollTop <= target.clientHeight + 1) {
       setUnviewedMessageCount(0);
@@ -126,7 +135,7 @@ const AppContextProvider = ({ children }) => {
 
     //* Load more messages when reaching top
     if (target.scrollTop === 0) {
-      console.log("messages.length :>> ", messages.length);
+      // console.log("messages.length :>> ", messages.length);
       const { data, error } = await supabase
         .from("messages")
         .select()
@@ -136,7 +145,7 @@ const AppContextProvider = ({ children }) => {
         setError(error.message);
         return;
       }
-      target.scrollTop = 1
+      target.scrollTop = 1;
       setMessages((prevMessages) => [...prevMessages, ...data]);
     }
   };
@@ -157,7 +166,7 @@ const AppContextProvider = ({ children }) => {
         getMessagesAndSubscribe,
         username,
         setUsername,
-        isGuest: true,
+        randomUsername,
         routeHash,
         scrollRef,
         onScroll,

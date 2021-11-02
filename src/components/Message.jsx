@@ -1,8 +1,8 @@
 import { Box, Grid, GridItem } from "@chakra-ui/react";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
-
 dayjs.extend(relativeTime);
+import { MdVerified } from "react-icons/md";
 
 export default function Message({ message, isYou }) {
   const countyCode =
@@ -20,7 +20,7 @@ export default function Message({ message, isYou }) {
         borderRadius="5px"
         borderTopLeftRadius={isYou ? "5px" : "0"}
         borderTopRightRadius={isYou ? "0" : "5px"}
-        bg="gray.100"
+        bg={isYou ? "#dbfff9" : "#edf3f9"}
         mt="5"
         position="relative"
         _after={{
@@ -30,10 +30,9 @@ export default function Message({ message, isYou }) {
           height: 0,
           borderStyle: "solid",
           borderWidth: isYou ? "0px 0px 10px 10px" : "0px 10px 10px 0",
-          // borderWidth: "0px 0px 10px 10px",
           borderColor: isYou
-            ? "transparent transparent transparent #EDF2F7"
-            : "transparent #EDF2F7 transparent transparent",
+            ? "transparent transparent transparent #dbfff9"
+            : "transparent #edf3f9 transparent transparent",
           top: 0,
           left: isYou ? "auto" : "-10px",
           right: isYou ? "-10px" : "auto",
@@ -46,7 +45,10 @@ export default function Message({ message, isYou }) {
           color="gray.500"
           mb="2"
         >
-          {isYou ? "You" : message.username}{" "}
+          {message.username} {isYou && "(you)"}{" "}
+          {message.is_authenticated && (
+            <MdVerified color="#1d9bf0" style={{ display: "inline" }} />
+          )}
           {countyCode && (
             <Box display="inline-block" fontSize="10px">
               from {message.country}{" "}
@@ -67,7 +69,12 @@ export default function Message({ message, isYou }) {
         >
           {message.text}
         </GridItem>
-        <GridItem color="gray" fontSize="10px" justifySelf="end" alignSelf="end">
+        <GridItem
+          color="gray"
+          fontSize="10px"
+          justifySelf="end"
+          alignSelf="end"
+        >
           {dayjs(message.timestamp).fromNow()}
         </GridItem>
       </Grid>
