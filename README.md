@@ -1,7 +1,7 @@
 # Full-stack real-time chat
 
 - **Data:** PostgeSQL managed by [Supabase](https://supabase.io/) [@supabase_io](https://twitter.com/supabase_io) (awsome real-time API).
-- **Front-end**: React [create-react-app](https://create-react-app.dev/)
+- **Front-end**: React + Vite
 - **UI library**: [chakra-ui](https://chakra-ui.com/) [@chakra_ui](https://twitter.com/chakra_ui)
 - **Hosting**: [Netlify](https://www.netlify.com/)
 - Country flags from [Flagpedia](https://flagpedia.net)
@@ -12,7 +12,7 @@
 
 ## Supabase variables
 
-Create a `.env` file for the Supapase URL and ANON KEY (see env.example)
+Create a `.env` file with `VITE_SUPABASE_URL` and `VITE_SUPABASE_KEY` (see env.example)
 
 ## Setup your Supabase project
 
@@ -38,7 +38,7 @@ CREATE TABLE messages (
 
 ## Dev
 
-`npm start` to run server on port 3000
+`npm run dev` to run server on port 3000
 
 ## Build
 
