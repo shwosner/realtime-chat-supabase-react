@@ -45,9 +45,12 @@ export default function Message({ message, isYou }) {
           color="gray.500"
           mb="2"
         >
-          {message.username} {isYou && "(you)"}{" "}
+          <span>{message.username} </span>
           {message.is_authenticated && (
-            <MdVerified color="#1d9bf0" style={{ display: "inline" }} />
+            <MdVerified
+              color="#1d9bf0"
+              style={{ display: "inline", marginRight: "5px" }}
+            />
           )}
           {countyCode && (
             <Box display="inline-block" fontSize="10px">

@@ -14,6 +14,9 @@
 
 Create a `.env` file with `VITE_SUPABASE_URL` and `VITE_SUPABASE_KEY` (see env.example)
 
+<br/>
+<br/>
+
 ## Setup your Supabase project
 
 The following database table is required:
@@ -24,8 +27,8 @@ The following database table is required:
 | username         | VARCHAR   |
 | text             | TEXT      |
 | country          | VARCHAR   |
-| timestamp        | timestamp |
 | is_authenticated | BOOLEAN   |
+| timestamp        | timestamp |
 
 SQL query if not using the Supabase interface:
 
@@ -40,6 +43,13 @@ CREATE TABLE messages (
 );
 ```
 
+## Setup GitHub authentication (optional)
+
+Follow instrunction [here](https://supabase.io/docs/guides/auth/auth-github)
+
+<br/>
+<br/>
+
 ## Dev
 
 `npm run dev` to run server on port 3000
@@ -48,6 +58,9 @@ CREATE TABLE messages (
 
 `npm run build` to build the react client
 
+<br/>
+<br/>
+
 # Example
 
-!['example'](https://i.ibb.co/2d7Pzyb/random-chat.png "example")
+!['example'](https://random-chat.netlify.app/example.png "example")
