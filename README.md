@@ -14,9 +14,6 @@
 
 Create a `.env` file with `VITE_SUPABASE_URL` and `VITE_SUPABASE_KEY` (see env.example)
 
-<br/>
-<br/>
-
 ## Setup your Supabase project
 
 The following database table is required:
@@ -47,9 +44,6 @@ CREATE TABLE messages (
 
 Follow instrunction [here](https://supabase.io/docs/guides/auth/auth-github)
 
-<br/>
-<br/>
-
 ## Dev
 
 `npm run dev` to run server on port 3000
@@ -57,9 +51,6 @@ Follow instrunction [here](https://supabase.io/docs/guides/auth/auth-github)
 ## Build
 
 `npm run build` to build the react client
-
-<br/>
-<br/>
 
 # Example
 
