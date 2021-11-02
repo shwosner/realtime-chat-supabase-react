@@ -117,21 +117,15 @@ const AppContextProvider = ({ children }) => {
   const scrollRef = useRef();
 
   const onScroll = async ({ target }) => {
-    let {scrollTop} = target
-    // console.log({
-    //   "target.scrollHeight - target.scrollTop":
-    //     target.scrollHeight - target.scrollTop,
-    //   clientHeight: target.clientHeight,
-    // });
     if (target.scrollHeight - target.scrollTop <= target.clientHeight + 1) {
       setUnviewedMessageCount(0);
       setIsOnBottom(true);
     } else {
       setIsOnBottom(false);
     }
-    console.log('scrollTop :>> ', scrollTop);
+
     //* Load more messages when reaching top
-    if (scrollTop === 1) {
+    if (target.scrollTop === 0) {
       console.log("messages.length :>> ", messages.length);
       const { data, error } = await supabase
         .from("messages")
@@ -142,10 +136,9 @@ const AppContextProvider = ({ children }) => {
         setError(error.message);
         return;
       }
+      target.scrollTop = 1
       setMessages((prevMessages) => [...prevMessages, ...data]);
     }
-    //* This is a fix if user quickly scrolls to top
-    if (scrollTop === 0) scrollRef.current.scrollTop = 20;
   };
 
   const scrollToBottom = () => {
