@@ -1,5 +1,16 @@
 import { Button, Grid, GridItem, Image } from "@chakra-ui/react";
-import { FaGithub } from "react-icons/fa";
+import {
+  Popover,
+  PopoverTrigger,
+  Portal,
+  PopoverContent,
+  PopoverArrow,
+  PopoverHeader,
+  PopoverBody,
+  PopoverFooter,
+  PopoverCloseButton,
+} from "@chakra-ui/react";
+import { FaGithub, FaGitlab } from "react-icons/fa";
 
 import { useAppContext } from "../context/appContext";
 import NameForm from "./NameForm";
@@ -44,20 +55,56 @@ export default function Header() {
           <GridItem justifySelf="end" alignSelf="end">
             <NameForm username={username} setUsername={setUsername} />
           </GridItem>
-          <Button
-            size="sm"
-            marginRight="2"
-            colorScheme="teal"
-            rightIcon={<FaGithub />}
-            variant="outline"
-            onClick={() =>
-              auth.signIn({
-                provider: "github",
-              })
-            }
-          >
-            Login
-          </Button>
+          <Popover>
+            <PopoverTrigger>
+              <Button
+                size="sm"
+                marginRight="2"
+                colorScheme="teal"
+                variant="outline"
+              >
+                Login/Signup
+              </Button>
+            </PopoverTrigger>
+
+            <Portal>
+              <PopoverContent>
+                <PopoverArrow />
+                <PopoverCloseButton />
+                <PopoverBody>
+                  <Button
+                    size="sm"
+                    marginRight="2"
+                    colorScheme="teal"
+                    rightIcon={<FaGithub />}
+                    variant="outline"
+                    onClick={() =>
+                      auth.signIn({
+                        provider: "github",
+                      })
+                    }
+                  >
+                    Login
+                  </Button>
+
+                  <Button
+                    size="sm"
+                    marginRight="2"
+                    colorScheme="teal"
+                    rightIcon={<FaGitlab />}
+                    variant="outline"
+                    onClick={() =>
+                      auth.signIn({
+                        provider: "gitlab",
+                      })
+                    }
+                  >
+                    Login
+                  </Button>
+                </PopoverBody>
+              </PopoverContent>
+            </Portal>
+          </Popover>
         </>
       )}
     </Grid>

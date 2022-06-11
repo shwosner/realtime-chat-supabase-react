@@ -1,1 +1,0 @@
-{"version":3,"sources":["../../src/index.tsx"],"names":[],"mappings":";;;;;;;;AACA;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;;AACA","sourcesContent":["export type { Placement, PlacementWithLogical } from \"./popper.placement\"\nexport * from \"./use-popper\"\nexport { cssVars as popperCSSVars } from \"./utils\"\n"],"file":"index.js"}
