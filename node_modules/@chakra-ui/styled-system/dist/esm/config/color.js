@@ -1,0 +1,8 @@
+import { t } from "../utils";
+export var color = {
+  color: t.colors("color"),
+  textColor: t.colors("color"),
+  fill: t.colors("fill"),
+  stroke: t.colors("stroke")
+};
+//# sourceMappingURL=color.js.map
