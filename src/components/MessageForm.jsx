@@ -65,6 +65,7 @@ export default function MessageForm() {
               bg="white"
               border="none"
               autoFocus
+              maxLength="500"
             />
             <IconButton
               // variant="outline"
