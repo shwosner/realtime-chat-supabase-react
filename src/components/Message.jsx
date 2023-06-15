@@ -3,6 +3,7 @@ import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 dayjs.extend(relativeTime);
 import { MdVerified } from "react-icons/md";
+import { truncateText } from "../utils";
 
 export default function Message({ message, isYou }) {
   const countyCode =
@@ -70,7 +71,7 @@ export default function Message({ message, isYou }) {
           fontSize="md"
           fontFamily="Montserrat, sans-serif"
         >
-          {message.text}
+          {truncateText(message.text)}
         </GridItem>
         <GridItem
           color="gray"
