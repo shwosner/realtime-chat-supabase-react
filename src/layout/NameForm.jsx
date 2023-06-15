@@ -50,6 +50,7 @@ export default function NameForm() {
             border="none"
             onBlur={handleSubmit}
             ref={inputRef}
+            maxLength="15"
           />
         ) : (
           <span onClick={toggleEditing} style={{ cursor: "pointer" }}>
