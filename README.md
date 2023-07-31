@@ -39,6 +39,7 @@ CREATE TABLE messages (
   timestamp timestamp default now() NOT NULL
 );
 ```
+Note: If you're using Supabase interface, don't forget to tick `Enable Realtime` setting after you created the table.
 
 ## Setup GitHub authentication (optional)
 
