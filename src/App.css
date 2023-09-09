@@ -1,9 +1,11 @@
 body {
   min-height: 100vh;
   min-height: -webkit-fill-available;
+  background-color: #222;
 }
 html {
   height: -webkit-fill-available;
+  background-color: #222;
 }
 
 ::-webkit-scrollbar {
@@ -12,21 +14,20 @@ html {
 
 /* Track */
 ::-webkit-scrollbar-track {
-  background: #f1f1f1;
+  background: #333;
 }
 
 /* Handle */
 ::-webkit-scrollbar-thumb {
-  /* background: #888; */
-  background: #3faaac;
+  background: #444;
   border-radius: 5px;
 }
 
 /* Handle on hover */
 ::-webkit-scrollbar-thumb:hover {
-  background: #2c7a7b;
+  background: #555;
 }
 
 a {
-  color: teal !important;
+  color: #f5f5f5 !important;
 }
