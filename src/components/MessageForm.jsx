@@ -9,9 +9,10 @@ import {
 } from "@chakra-ui/react";
 import { BiSend } from "react-icons/bi";
 import { useAppContext } from "../context/appContext";
+import supabase from "../supabaseClient";
 
 export default function MessageForm() {
-  const { supabase, username, country, auth } = useAppContext();
+  const { username, country } = useAppContext();
   const [message, setMessage] = useState("");
   const toast = useToast();
   const [isSending, setIsSending] = useState(false);
@@ -29,7 +30,7 @@ export default function MessageForm() {
           text: message,
           username,
           country,
-          is_authenticated: auth.user() ? true : false,
+          is_authenticated: supabase.auth.user ? true : false,
         },
       ]);
 

@@ -4,7 +4,7 @@ import "./App.css";
 import Header from "./layout/Header";
 import Footer from "./layout/Footer";
 import Chat from "./components/Chat";
-import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { AppContextProvider, useAppContext } from "./context/appContext";
 
 function App() {
@@ -30,14 +30,19 @@ function App() {
         <Box bg="gray.100">
           {/* <ColorModeSwitcher justifySelf="flex-end" /> */}
           <Router>
-            <Switch>
-              <Route exact path="/">
-                <Header username={username} setUsername={setUsername} />
-                <Chat username={username} />
-                <Footer username={username} />
-              </Route>
-              <Route>Not found</Route>
-            </Switch>
+            <Routes>
+              <Route
+                path="/"
+                element={
+                  <>
+                    <Header />
+                    <Chat />
+                    <Footer />
+                  </>
+                }
+              />
+              <Route path="*" element={<p>Not found</p>} />
+            </Routes>
           </Router>
         </Box>
       </AppContextProvider>
