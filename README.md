@@ -1,5 +1,7 @@
 # Full-stack real-time chat
 
+[![Netlify Status](https://api.netlify.com/api/v1/badges/38b6f457-50d2-42ac-b9a8-9ca962febebd/deploy-status)](https://app.netlify.com/sites/random-chat/deploys)
+
 - **Data:** PostgeSQL managed by [Supabase](https://supabase.io/) [@supabase_io](https://twitter.com/supabase_io) (awsome real-time API).
 - **Front-end**: React + Vite
 - **UI library**: [chakra-ui](https://chakra-ui.com/) [@chakra_ui](https://twitter.com/chakra_ui)
@@ -39,6 +41,7 @@ CREATE TABLE messages (
   timestamp timestamp default now() NOT NULL
 );
 ```
+
 Note: If you're using Supabase interface, don't forget to tick `Enable Realtime` setting after you created the table.
 
 ## Setup GitHub authentication (optional)
