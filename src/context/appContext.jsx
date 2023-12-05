@@ -26,20 +26,6 @@ const AppContextProvider = ({ children }) => {
     }
   }, [messages]);
 
-  useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-    });
-
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session);
-    });
-
-    return () => subscription.unsubscribe();
-  }, []);
-
   const getLocation = async () => {
     try {
       const res = await fetch("https://api.db-ip.com/v2/free/self");
@@ -59,19 +45,12 @@ const AppContextProvider = ({ children }) => {
   const randomUsername = () => {
     return `@user${Date.now().toString().slice(-4)}`;
   };
-  const initializeUser = async () => {
-    const {
-      data: { session },
-    } = await supabase.auth.getSession();
+  const initializeUser = (session) => {
+    setSession(session);
+    // const {
+    //   data: { session },
+    // } = await supabase.auth.getSession();
 
-    console.log("session", session);
-
-    const user = supabase.auth.user;
-    console.log("user", user);
-
-    console.log("supabase.auth.getUser()", await supabase.auth.getUser());
-
-    console.log("supabase.auth.getSession()", await supabase.auth.getSession());
     let username;
     if (session) {
       username = session.user.user_metadata.user_name;
@@ -83,7 +62,10 @@ const AppContextProvider = ({ children }) => {
   };
 
   useEffect(() => {
-    initializeUser();
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      initializeUser(session);
+    });
+
     getMessagesAndSubscribe();
 
     const storedCountryCode = localStorage.getItem("countryCode");
@@ -91,10 +73,13 @@ const AppContextProvider = ({ children }) => {
       setCountryCode(storedCountryCode);
     else getLocation();
 
-    supabase.auth.onAuthStateChange((event, session) => {
-      console.log("onAuthStateChange", { event, session });
-      if (event === "SIGNED_IN") initializeUser();
+    const {
+      data: { subscription: authSubscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      console.log("onAuthStateChange", { _event, session });
+      initializeUser(session);
     });
+
     // const { hash, pathname } = window.location;
     // if (hash && pathname === "/") {
     //   console.log("hash", hash);
@@ -106,6 +91,8 @@ const AppContextProvider = ({ children }) => {
       if (myChannel) {
         supabase.removeChannel(myChannel);
       }
+
+      authSubscription.unsubscribe();
     };
   }, []);
 
