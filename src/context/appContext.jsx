@@ -49,6 +49,7 @@ const AppContextProvider = ({ children }) => {
     supabase.auth;
     console.log("user", user);
     console.log("supabase.auth", supabase.auth);
+    console.log("supabase.auth.getSession()", supabase.auth.getSession());
     let username;
     if (user) {
       username = user.user_metadata.user_name;
