@@ -46,7 +46,9 @@ const AppContextProvider = ({ children }) => {
   };
   const initializeUser = () => {
     const user = supabase.auth.user;
+    supabase.auth;
     console.log("user", user);
+    console.log("supabase.auth", supabase.auth);
     let username;
     if (user) {
       username = user.user_metadata.user_name;
