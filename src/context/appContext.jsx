@@ -6,6 +6,7 @@ const AppContext = createContext({});
 const AppContextProvider = ({ children }) => {
   let myChannel = null;
   const [username, setUsername] = useState("");
+  // const [session, setSession] = useState(null);
   const [messages, setMessages] = useState([]);
   const [error, setError] = useState("");
   const [loadingInitial, setLoadingInitial] = useState(true);
@@ -24,6 +25,20 @@ const AppContextProvider = ({ children }) => {
       scrollToBottom();
     }
   }, [messages]);
+
+  // useEffect(() => {
+  //   supabase.auth.getSession().then(({ data: { session } }) => {
+  //     setSession(session)
+  //   })
+
+  //   const {
+  //     data: { subscription },
+  //   } = supabase.auth.onAuthStateChange((_event, session) => {
+  //     setSession(session)
+  //   })
+
+  //   return () => subscription.unsubscribe()
+  // }, [])
 
   const getLocation = async () => {
     try {
@@ -44,15 +59,18 @@ const AppContextProvider = ({ children }) => {
   const randomUsername = () => {
     return `@user${Date.now().toString().slice(-4)}`;
   };
-  const initializeUser = () => {
-    const user = supabase.auth.user;
-    supabase.auth;
-    console.log("user", user);
-    console.log("supabase.auth", supabase.auth);
-    console.log("supabase.auth.getSession()", supabase.auth.getSession());
+  const initializeUser = async () => {
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
+
+    console.log("session", session);
+
+    // const user = supabase.auth.user;
+    console.log("supabase.auth.getSession()", await supabase.auth.getSession());
     let username;
-    if (user) {
-      username = user.user_metadata.user_name;
+    if (session) {
+      username = session.user.user_metadata.user_name;
     } else {
       username = localStorage.getItem("username") || randomUsername();
     }
@@ -71,7 +89,8 @@ const AppContextProvider = ({ children }) => {
 
     supabase.auth.onAuthStateChange((event, session) => {
       console.log("onAuthStateChange", { event, session });
-      if (event === "SIGNED_IN") initializeUser();
+      if (event === "SIGNED_IN")
+        initializeUser(session.user.user_metadata.user_name);
     });
     // const { hash, pathname } = window.location;
     // if (hash && pathname === "/") {
