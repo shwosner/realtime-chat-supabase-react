@@ -6,7 +6,7 @@ const AppContext = createContext({});
 const AppContextProvider = ({ children }) => {
   let myChannel = null;
   const [username, setUsername] = useState("");
-  // const [session, setSession] = useState(null);
+  const [session, setSession] = useState(null);
   const [messages, setMessages] = useState([]);
   const [error, setError] = useState("");
   const [loadingInitial, setLoadingInitial] = useState(true);
@@ -26,19 +26,19 @@ const AppContextProvider = ({ children }) => {
     }
   }, [messages]);
 
-  // useEffect(() => {
-  //   supabase.auth.getSession().then(({ data: { session } }) => {
-  //     setSession(session)
-  //   })
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+    });
 
-  //   const {
-  //     data: { subscription },
-  //   } = supabase.auth.onAuthStateChange((_event, session) => {
-  //     setSession(session)
-  //   })
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session);
+    });
 
-  //   return () => subscription.unsubscribe()
-  // }, [])
+    return () => subscription.unsubscribe();
+  }, []);
 
   const getLocation = async () => {
     try {
@@ -66,7 +66,11 @@ const AppContextProvider = ({ children }) => {
 
     console.log("session", session);
 
-    // const user = supabase.auth.user;
+    const user = supabase.auth.user;
+    console.log("user", user);
+
+    console.log("supabase.auth.getUser()", await supabase.auth.getUser());
+
     console.log("supabase.auth.getSession()", await supabase.auth.getSession());
     let username;
     if (session) {
@@ -89,8 +93,7 @@ const AppContextProvider = ({ children }) => {
 
     supabase.auth.onAuthStateChange((event, session) => {
       console.log("onAuthStateChange", { event, session });
-      if (event === "SIGNED_IN")
-        initializeUser(session.user.user_metadata.user_name);
+      if (event === "SIGNED_IN") initializeUser();
     });
     // const { hash, pathname } = window.location;
     // if (hash && pathname === "/") {
@@ -218,6 +221,7 @@ const AppContextProvider = ({ children }) => {
         isOnBottom,
         country: countryCode,
         unviewedMessageCount,
+        session,
       }}
     >
       {children}
