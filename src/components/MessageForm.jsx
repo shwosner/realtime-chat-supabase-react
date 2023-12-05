@@ -12,7 +12,7 @@ import { useAppContext } from "../context/appContext";
 import supabase from "../supabaseClient";
 
 export default function MessageForm() {
-  const { username, country } = useAppContext();
+  const { username, country, session } = useAppContext();
   const [message, setMessage] = useState("");
   const toast = useToast();
   const [isSending, setIsSending] = useState(false);
@@ -30,7 +30,7 @@ export default function MessageForm() {
           text: message,
           username,
           country,
-          is_authenticated: supabase.auth.user ? true : false,
+          is_authenticated: session ? true : false,
         },
       ]);
 

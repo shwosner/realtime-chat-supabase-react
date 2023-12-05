@@ -6,6 +6,7 @@ const AppContext = createContext({});
 const AppContextProvider = ({ children }) => {
   let myChannel = null;
   const [username, setUsername] = useState("");
+  const [session, setSession] = useState(null);
   const [messages, setMessages] = useState([]);
   const [error, setError] = useState("");
   const [loadingInitial, setLoadingInitial] = useState(true);
@@ -44,11 +45,15 @@ const AppContextProvider = ({ children }) => {
   const randomUsername = () => {
     return `@user${Date.now().toString().slice(-4)}`;
   };
-  const initializeUser = () => {
-    const user = supabase.auth.user;
+  const initializeUser = (session) => {
+    setSession(session);
+    // const {
+    //   data: { session },
+    // } = await supabase.auth.getSession();
+
     let username;
-    if (user) {
-      username = user.user_metadata.user_name;
+    if (session) {
+      username = session.user.user_metadata.user_name;
     } else {
       username = localStorage.getItem("username") || randomUsername();
     }
@@ -57,7 +62,10 @@ const AppContextProvider = ({ children }) => {
   };
 
   useEffect(() => {
-    initializeUser();
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      initializeUser(session);
+    });
+
     getMessagesAndSubscribe();
 
     const storedCountryCode = localStorage.getItem("countryCode");
@@ -65,10 +73,13 @@ const AppContextProvider = ({ children }) => {
       setCountryCode(storedCountryCode);
     else getLocation();
 
-    supabase.auth.onAuthStateChange((event, session) => {
-      console.log("onAuthStateChange", { event, session });
-      if (event === "SIGNED_IN") initializeUser();
+    const {
+      data: { subscription: authSubscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      console.log("onAuthStateChange", { _event, session });
+      initializeUser(session);
     });
+
     // const { hash, pathname } = window.location;
     // if (hash && pathname === "/") {
     //   console.log("hash", hash);
@@ -80,6 +91,8 @@ const AppContextProvider = ({ children }) => {
       if (myChannel) {
         supabase.removeChannel(myChannel);
       }
+
+      authSubscription.unsubscribe();
     };
   }, []);
 
@@ -195,6 +208,7 @@ const AppContextProvider = ({ children }) => {
         isOnBottom,
         country: countryCode,
         unviewedMessageCount,
+        session,
       }}
     >
       {children}
