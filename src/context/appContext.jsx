@@ -1,14 +1,10 @@
 import { createContext, useContext, useEffect, useRef, useState } from "react";
-import { createClient } from "@supabase/supabase-js";
+import supabase from "../supabaseClient";
 
 const AppContext = createContext({});
 
 const AppContextProvider = ({ children }) => {
-  const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-  const supabaseKey = import.meta.env.VITE_SUPABASE_KEY;
-  const supabase = createClient(supabaseUrl, supabaseKey);
-
-  let mySubscription = null;
+  let myChannel = null;
   const [username, setUsername] = useState("");
   const [messages, setMessages] = useState([]);
   const [error, setError] = useState("");
@@ -19,6 +15,15 @@ const AppContextProvider = ({ children }) => {
     useState(null);
   const [unviewedMessageCount, setUnviewedMessageCount] = useState(0);
   const [countryCode, setCountryCode] = useState("");
+  const [isInitialLoad, setIsInitialLoad] = useState(false);
+
+  useEffect(() => {
+    // Effect to scroll to bottom on initial message load
+    if (isInitialLoad) {
+      setIsInitialLoad(false);
+      scrollToBottom();
+    }
+  }, [messages]);
 
   const getLocation = async () => {
     try {
@@ -37,10 +42,10 @@ const AppContextProvider = ({ children }) => {
   };
 
   const randomUsername = () => {
-    return `@user${Date.now().toString().substr(-4)}`;
+    return `@user${Date.now().toString().slice(-4)}`;
   };
   const initializeUser = () => {
-    const user = supabase.auth.user();
+    const user = supabase.auth.user;
     let username;
     if (user) {
       username = user.user_metadata.user_name;
@@ -54,10 +59,6 @@ const AppContextProvider = ({ children }) => {
   useEffect(() => {
     initializeUser();
     getMessagesAndSubscribe();
-
-    // const storedUser = localStorage.getItem("username");
-    // if (storedUser) setUsername(storedUser);
-    // else setUsername(`@user${Date.now().toString().substr(-4)}`);
 
     const storedCountryCode = localStorage.getItem("countryCode");
     if (storedCountryCode && storedCountryCode !== "undefined")
@@ -75,14 +76,21 @@ const AppContextProvider = ({ children }) => {
     // }
 
     return () => {
-      supabase.removeSubscription();
-      console.log("Remove supabase subscription by useEffect unmount");
+      // Remove supabase channel subscription by useEffect unmount
+      if (myChannel) {
+        supabase.removeChannel(myChannel);
+      }
     };
   }, []);
 
   useEffect(() => {
-    if (newIncomingMessageTrigger?.username === username) scrollToBottom();
-    else setUnviewedMessageCount((prevCount) => prevCount + 1);
+    if (!newIncomingMessageTrigger) return;
+
+    if (newIncomingMessageTrigger.username === username) {
+      scrollToBottom();
+    } else {
+      setUnviewedMessageCount((prevCount) => prevCount + 1);
+    }
   }, [newIncomingMessageTrigger]);
 
   const handleNewMessage = (payload) => {
@@ -92,34 +100,48 @@ const AppContextProvider = ({ children }) => {
   };
 
   const getInitialMessages = async () => {
-    if (!messages.length) {
-      const { data, error } = await supabase
-        .from("messages")
-        .select()
-        .range(0, 49)
-        .order("id", { ascending: false });
-      // console.log(`data`, data);
-      setLoadingInitial(false);
-      if (error) {
-        setError(error.message);
-        supabase.removeSubscription(mySubscription);
-        mySubscription = null;
-        return;
-      }
-      setMessages(data);
-      scrollToBottom();
+    if (messages.length) return;
+
+    const { data, error } = await supabase
+      .from("messages")
+      .select()
+      .range(0, 49)
+      .order("id", { ascending: false });
+    // console.log(`data`, data);
+
+    setLoadingInitial(false);
+    if (error) {
+      setError(error.message);
+      return;
     }
+
+    setIsInitialLoad(true);
+    setMessages(data);
+    // scrollToBottom(); // not sure why this stopped working, meanwhile using useEffect that's listening to messages and isInitialLoad state.
   };
 
   const getMessagesAndSubscribe = async () => {
     setError("");
-    if (!mySubscription) {
-      getInitialMessages();
-      mySubscription = supabase
-        .from("messages")
-        .on("*", (payload) => {
-          handleNewMessage(payload);
-        })
+
+    await getInitialMessages();
+
+    if (!myChannel) {
+      // mySubscription = supabase
+      // .from("messages")
+      // .on("*", (payload) => {
+      //   handleNewMessage(payload);
+      // })
+      // .subscribe();
+
+      myChannel = supabase
+        .channel("custom-all-channel")
+        .on(
+          "postgres_changes",
+          { event: "*", schema: "public", table: "messages" },
+          (payload) => {
+            handleNewMessage(payload);
+          }
+        )
         .subscribe();
     }
   };
@@ -152,14 +174,13 @@ const AppContextProvider = ({ children }) => {
 
   const scrollToBottom = () => {
     if (!scrollRef.current) return;
+
     scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
   };
 
   return (
     <AppContext.Provider
       value={{
-        supabase,
-        auth: supabase.auth,
         messages,
         loadingInitial,
         error,
