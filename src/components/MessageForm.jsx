@@ -1,12 +1,6 @@
 import { useState } from "react";
-import {
-  Input,
-  Stack,
-  IconButton,
-  useToast,
-  Box,
-  Container,
-} from "@chakra-ui/react";
+import { Input, Stack, IconButton, Box, Container } from "@chakra-ui/react";
+import { toaster } from "@/components/ui/toaster";
 import { BiSend } from "react-icons/bi";
 import { useAppContext } from "../context/appContext";
 import supabase from "../supabaseClient";
@@ -14,7 +8,6 @@ import supabase from "../supabaseClient";
 export default function MessageForm() {
   const { username, country, session } = useAppContext();
   const [message, setMessage] = useState("");
-  const toast = useToast();
   const [isSending, setIsSending] = useState(false);
 
   const handleSubmit = async (e) => {
@@ -36,12 +29,14 @@ export default function MessageForm() {
 
       if (error) {
         console.error(error.message);
-        toast({
+        toaster.create({
           title: "Error sending",
           description: error.message,
           status: "error",
           duration: 9000,
           isClosable: true,
+          color: "white",
+          background: "#ef4444", //error
         });
         return;
       }
@@ -69,6 +64,7 @@ export default function MessageForm() {
               maxLength="500"
             />
             <IconButton
+              background="teal"
               // variant="outline"
               colorScheme="teal"
               aria-label="Send"
@@ -77,7 +73,9 @@ export default function MessageForm() {
               type="submit"
               disabled={!message}
               isLoading={isSending}
-            />
+            >
+              <BiSend />
+            </IconButton>
           </Stack>
         </form>
         <Box fontSize="10px" mt="1">

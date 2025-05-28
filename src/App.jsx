@@ -1,5 +1,5 @@
-import { ChakraProvider, Box, theme } from "@chakra-ui/react";
-// import { ColorModeSwitcher } from "./components/ColorModeSwitcher";
+import { Box } from "@chakra-ui/react";
+import { Provider } from "@/components/ui/provider";
 import "./App.css";
 import Header from "./layout/Header";
 import Footer from "./layout/Footer";
@@ -25,10 +25,9 @@ function App() {
       );
   }
   return (
-    <ChakraProvider theme={theme}>
+    <Provider>
       <AppContextProvider>
         <Box bg="gray.100">
-          {/* <ColorModeSwitcher justifySelf="flex-end" /> */}
           <Router>
             <Routes>
               <Route
@@ -46,7 +45,7 @@ function App() {
           </Router>
         </Box>
       </AppContextProvider>
-    </ChakraProvider>
+    </Provider>
   );
 }
 

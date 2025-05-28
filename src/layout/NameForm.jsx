@@ -64,14 +64,16 @@ export default function NameForm() {
           colorScheme="teal"
           aria-label="Save"
           fontSize="15px"
-          icon={isEditing ? <BiSave /> : <BiEdit />}
           border="none"
+          color="teal"
           onClick={(e) => {
             if (isEditing) {
               handleSubmit(e);
             } else toggleEditing();
           }}
-        />
+        >
+          {isEditing ? <BiSave /> : <BiEdit />}
+        </IconButton>
       </Stack>
     </form>
   );
