@@ -14,7 +14,7 @@ export default function Messages() {
     );
   if (error)
     return (
-      <Alert status="error" mt="20px">
+      <Alert.Root status="error" mt="20px">
         {error}
         <Button
           ml="5px"
@@ -24,7 +24,7 @@ export default function Messages() {
         >
           try to reconnect
         </Button>
-      </Alert>
+      </Alert.Root>
     );
 
   if (!messages.length)
