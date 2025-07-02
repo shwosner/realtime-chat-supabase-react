@@ -12,15 +12,16 @@ export default function MessageForm() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setIsSending(true);
-    if (!message) return;
 
-    setMessage("");
+    const trimmedMessage = message.trim();
+    if (!trimmedMessage) return;
+
+    setIsSending(true);
 
     try {
       const { error } = await supabase.from("messages").insert([
         {
-          text: message,
+          text: trimmedMessage,
           username,
           country,
           is_authenticated: session ? true : false,
@@ -40,9 +41,11 @@ export default function MessageForm() {
         });
         return;
       }
-      console.log("Sucsessfully sent!");
+
+      setMessage(""); // Clear only after successful send
+      console.log("Successfully sent!");
     } catch (error) {
-      console.log("error sending message:", error);
+      console.log("Error sending message:", error);
     } finally {
       setIsSending(false);
     }
@@ -65,13 +68,12 @@ export default function MessageForm() {
             />
             <IconButton
               background="teal"
-              // variant="outline"
               colorScheme="teal"
               aria-label="Send"
               fontSize="20px"
               icon={<BiSend />}
               type="submit"
-              disabled={!message}
+              disabled={!message.trim()}
               isLoading={isSending}
             >
               <BiSend />
