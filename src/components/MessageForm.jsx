@@ -13,18 +13,18 @@ export default function MessageForm() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const trimmedMessage = message.trim();
-    if (!trimmedMessage) return;
+    const trimmed = message.trim();
+    if (!trimmed) return;
 
     setIsSending(true);
 
     try {
       const { error } = await supabase.from("messages").insert([
         {
-          text: trimmedMessage,
+          text: trimmed,
           username,
           country,
-          is_authenticated: session ? true : false,
+          is_authenticated: !!session,
         },
       ]);
 
@@ -37,12 +37,12 @@ export default function MessageForm() {
           duration: 9000,
           isClosable: true,
           color: "white",
-          background: "#ef4444", //error
+          background: "#ef4444",
         });
         return;
       }
 
-      setMessage(""); // Clear only after successful send
+      setMessage("");
       console.log("Successfully sent!");
     } catch (error) {
       console.log("Error sending message:", error);
@@ -67,21 +67,19 @@ export default function MessageForm() {
               maxLength="500"
             />
             <IconButton
-              background="teal"
-              colorScheme="teal"
-              aria-label="Send"
-              fontSize="20px"
               icon={<BiSend />}
+              aria-label="Send"
               type="submit"
               disabled={!message.trim()}
               isLoading={isSending}
-            >
-              <BiSend />
-            </IconButton>
+              background="teal"
+              colorScheme="teal"
+              fontSize="20px"
+            />
           </Stack>
         </form>
         <Box fontSize="10px" mt="1">
-          Warning: do not share any sensitive information, it's a public chat
+          Warning: do not share any sensitive information, it’s a public chat
           room 🙂
         </Box>
       </Container>
