@@ -71,9 +71,8 @@ export default function MessageForm() {
               colorScheme="teal"
               aria-label="Send"
               fontSize="20px"
-              icon={<BiSend />}
               type="submit"
-              disabled={!message}
+              disabled={!message.trim()}
               isLoading={isSending}
             >
               <BiSend />
