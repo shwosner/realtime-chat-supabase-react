@@ -67,15 +67,17 @@ export default function MessageForm() {
               maxLength="500"
             />
             <IconButton
-              icon={<BiSend />}
-              aria-label="Send"
-              type="submit"
-              disabled={!message.trim()}
-              isLoading={isSending}
               background="teal"
               colorScheme="teal"
+              aria-label="Send"
               fontSize="20px"
-            />
+              icon={<BiSend />}
+              type="submit"
+              disabled={!message}
+              isLoading={isSending}
+            >
+              <BiSend />
+            </IconButton>
           </Stack>
         </form>
         <Box fontSize="10px" mt="1">
