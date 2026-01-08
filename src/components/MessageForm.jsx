@@ -62,6 +62,7 @@ export default function MessageForm() {
               border="none"
               autoFocus
               maxLength="500"
+              color= "black"
             />
             <IconButton
               background="teal"
