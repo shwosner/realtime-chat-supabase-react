@@ -1,126 +1,95 @@
-import { createContext, useContext, useEffect, useRef, useState } from "react";
+import { createContext, useContext, useEffect, useRef, useState, useCallback } from "react";
 import supabase from "../supabaseClient";
 
 const AppContext = createContext({});
 
+// Constants
+const MESSAGES_PER_PAGE = 49;
+const CHAT_CHANNEL_NAME = "custom-all-channel";
+const LOCATION_API_URL = "https://api.db-ip.com/v2/free/self";
+const SCROLL_THRESHOLD = 1; // pixels from bottom to consider "at bottom"
+
 const AppContextProvider = ({ children }) => {
-  let myChannel = null;
+  // Refs
+  const myChannelRef = useRef(null);
+  const hasInitializedRef = useRef(false);
+  const scrollRef = useRef();
+
+  // User state
   const [username, setUsername] = useState("");
   const [session, setSession] = useState(null);
-  const [messages, setMessages] = useState([]);
-  const [error, setError] = useState("");
-  const [loadingInitial, setLoadingInitial] = useState(true);
-  const [routeHash, setRouteHash] = useState("");
-  const [isOnBottom, setIsOnBottom] = useState(false);
-  const [newIncomingMessageTrigger, setNewIncomingMessageTrigger] =
-    useState(null);
-  const [unviewedMessageCount, setUnviewedMessageCount] = useState(0);
   const [countryCode, setCountryCode] = useState("");
-  const [isInitialLoad, setIsInitialLoad] = useState(false);
 
+  // Messages state
+  const [messages, setMessages] = useState([]);
+  const [loadingInitial, setLoadingInitial] = useState(true);
+  const [error, setError] = useState("");
+  const [isInitialLoad, setIsInitialLoad] = useState(false);
+  const [newIncomingMessageTrigger, setNewIncomingMessageTrigger] = useState(null);
+
+  // UI state
+  const [isOnBottom, setIsOnBottom] = useState(false);
+  const [unviewedMessageCount, setUnviewedMessageCount] = useState(0);
+  const [routeHash, setRouteHash] = useState("");
+
+  // Scroll utilities
+  const scrollToBottom = useCallback(() => {
+    if (!scrollRef.current) return;
+    scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+  }, []);
+
+  // Scroll to bottom when initial messages are loaded
   useEffect(() => {
-    // Effect to scroll to bottom on initial message load
     if (isInitialLoad) {
       setIsInitialLoad(false);
       scrollToBottom();
     }
-  }, [messages]);
+  }, [messages, isInitialLoad, scrollToBottom]);
 
-  const getLocation = async () => {
+  // User utilities
+  const randomUsername = useCallback(() => {
+    return `@user${Date.now().toString().slice(-4)}`;
+  }, []);
+
+  const getLocation = useCallback(async () => {
     try {
-      const res = await fetch("https://api.db-ip.com/v2/free/self");
+      const res = await fetch(LOCATION_API_URL);
       const { countryCode, error } = await res.json();
       if (error) throw new Error(error);
 
       setCountryCode(countryCode);
       localStorage.setItem("countryCode", countryCode);
     } catch (error) {
-      console.error(
-        `error getting location from api.db-ip.com:`,
-        error.message
-      );
+      console.error("Error getting location:", error.message);
     }
-  };
-
-  const randomUsername = () => {
-    return `@user${Date.now().toString().slice(-4)}`;
-  };
-  const initializeUser = (session) => {
-    setSession(session);
-    // const {
-    //   data: { session },
-    // } = await supabase.auth.getSession();
-
-    let username;
-    if (session) {
-      username = session.user.user_metadata.user_name;
-    } else {
-      username = localStorage.getItem("username") || randomUsername();
-    }
-    setUsername(username);
-    localStorage.setItem("username", username);
-  };
-
-  useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      initializeUser(session);
-    });
-
-    getMessagesAndSubscribe();
-
-    const storedCountryCode = localStorage.getItem("countryCode");
-    if (storedCountryCode && storedCountryCode !== "undefined")
-      setCountryCode(storedCountryCode);
-    else getLocation();
-
-    const {
-      data: { subscription: authSubscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      console.log("onAuthStateChange", { _event, session });
-      initializeUser(session);
-    });
-
-    // const { hash, pathname } = window.location;
-    // if (hash && pathname === "/") {
-    //   console.log("hash", hash);
-    //   setRouteHash(hash);
-    // }
-
-    return () => {
-      // Remove supabase channel subscription by useEffect unmount
-      if (myChannel) {
-        supabase.removeChannel(myChannel);
-      }
-
-      authSubscription.unsubscribe();
-    };
   }, []);
 
-  useEffect(() => {
-    if (!newIncomingMessageTrigger) return;
+  const initializeUser = useCallback((session) => {
+    setSession(session);
 
-    if (newIncomingMessageTrigger.username === username) {
-      scrollToBottom();
-    } else {
-      setUnviewedMessageCount((prevCount) => prevCount + 1);
-    }
-  }, [newIncomingMessageTrigger]);
+    const username = session
+      ? session.user.user_metadata.user_name
+      : localStorage.getItem("username") || randomUsername();
 
-  const handleNewMessage = (payload) => {
+    setUsername(username);
+    localStorage.setItem("username", username);
+  }, [randomUsername, setSession, setUsername]);
+
+  // Message handlers
+  const handleNewMessage = useCallback((payload) => {
     setMessages((prevMessages) => [payload.new, ...prevMessages]);
-    //* needed to trigger react state because I need access to the username state
+    // Trigger effect to check if we should scroll or show notification
     setNewIncomingMessageTrigger(payload.new);
-  };
+  }, []);
 
-  const getInitialMessages = async () => {
+  const getInitialMessages = useCallback(async () => {
     if (messages.length) return;
 
     const { data, error } = await supabase
       .from("messages")
       .select()
-      .range(0, 49)
+      .range(0, MESSAGES_PER_PAGE)
       .order("id", { ascending: false });
-    // console.log(`data`, data);
 
     setLoadingInitial(false);
     if (error) {
@@ -130,65 +99,109 @@ const AppContextProvider = ({ children }) => {
 
     setIsInitialLoad(true);
     setMessages(data);
-    // scrollToBottom(); // not sure why this stopped working, meanwhile using useEffect that's listening to messages and isInitialLoad state.
-  };
+  }, [messages.length]);
 
-  const getMessagesAndSubscribe = async () => {
+  const createChannelSubscription = useCallback(() => {
+    if (myChannelRef.current) return;
+
+    myChannelRef.current = supabase
+      .channel(CHAT_CHANNEL_NAME)
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "messages" },
+        handleNewMessage
+      )
+      .subscribe();
+  }, [handleNewMessage]);
+
+  const getMessagesAndSubscribe = useCallback(async () => {
     setError("");
-
     await getInitialMessages();
+    createChannelSubscription();
+  }, [getInitialMessages, createChannelSubscription]);
 
-    if (!myChannel) {
-      // mySubscription = supabase
-      // .from("messages")
-      // .on("*", (payload) => {
-      //   handleNewMessage(payload);
-      // })
-      // .subscribe();
+  // Initialize app: auth, messages, location, and subscriptions
+  useEffect(() => {
+    if (hasInitializedRef.current) return;
+    hasInitializedRef.current = true;
 
-      myChannel = supabase
-        .channel("custom-all-channel")
-        .on(
-          "postgres_changes",
-          { event: "*", schema: "public", table: "messages" },
-          (payload) => {
-            handleNewMessage(payload);
-          }
-        )
-        .subscribe();
+    // Initialize user session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      initializeUser(session);
+    });
+
+    // Load messages and subscribe to real-time updates
+    getMessagesAndSubscribe();
+
+    // Load country code from localStorage or fetch from API
+    const storedCountryCode = localStorage.getItem("countryCode");
+    if (storedCountryCode && storedCountryCode !== "undefined") {
+      setCountryCode(storedCountryCode);
+    } else {
+      getLocation();
     }
-  };
 
-  const scrollRef = useRef();
+    // Listen for auth state changes
+    const {
+      data: { subscription: authSubscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      console.log("onAuthStateChange", { _event, session });
+      initializeUser(session);
+    });
+
+    return () => {
+      // Cleanup: remove channel subscription
+      if (myChannelRef.current) {
+        supabase.removeChannel(myChannelRef.current);
+        myChannelRef.current = null;
+      }
+
+      authSubscription.unsubscribe();
+      hasInitializedRef.current = false;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Handle new incoming messages: scroll if from current user, otherwise show notification
+  useEffect(() => {
+    if (!newIncomingMessageTrigger) return;
+
+    if (newIncomingMessageTrigger.username === username) {
+      scrollToBottom();
+    } else {
+      setUnviewedMessageCount((prevCount) => prevCount + 1);
+    }
+  }, [newIncomingMessageTrigger, username, scrollToBottom]);
+
+  // Handle scroll events: detect bottom position and load more messages at top
   const onScroll = async ({ target }) => {
-    if (target.scrollHeight - target.scrollTop <= target.clientHeight + 1) {
+    const isAtBottom =
+      target.scrollHeight - target.scrollTop <= target.clientHeight + SCROLL_THRESHOLD;
+
+    if (isAtBottom) {
       setUnviewedMessageCount(0);
       setIsOnBottom(true);
     } else {
       setIsOnBottom(false);
     }
 
-    //* Load more messages when reaching top
+    // Load more messages when scrolling to top
     if (target.scrollTop === 0) {
-      // console.log("messages.length :>> ", messages.length);
       const { data, error } = await supabase
         .from("messages")
         .select()
-        .range(messages.length, messages.length + 49)
+        .range(messages.length, messages.length + MESSAGES_PER_PAGE)
         .order("id", { ascending: false });
+
       if (error) {
         setError(error.message);
         return;
       }
+
+      // Maintain scroll position after loading
       target.scrollTop = 1;
       setMessages((prevMessages) => [...prevMessages, ...data]);
     }
-  };
-
-  const scrollToBottom = () => {
-    if (!scrollRef.current) return;
-
-    scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
   };
 
   return (

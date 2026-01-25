@@ -1,6 +1,7 @@
 body {
   min-height: 100vh;
   min-height: -webkit-fill-available;
+  color: #1a202c !important; /* Ensure text is always dark/visible */
 }
 html {
   height: -webkit-fill-available;

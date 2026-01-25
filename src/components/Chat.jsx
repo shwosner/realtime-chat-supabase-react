@@ -14,9 +14,11 @@ export default function Chat() {
     unviewedMessageCount,
   } = useAppContext();
   useEffect(() => {
-    window.addEventListener("resize", () => {
+    const handleResize = () => {
       setHeight(window.innerHeight - 205);
-    });
+    };
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
   }, []);
 
   return (
